@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<!-- import_products.html -->
+<div class="container">
+<h1>Імпорт товарів</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button btn btn-primary">Імпортувати</button>
+</form>
+</div>
+
+{% endblock %}

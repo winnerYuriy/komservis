@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+{% if brand.image %}
+    <div class="d-flex align-items-center justify-content-center">
+        <img src="{{ brand.image.url }}" alt="{{ brand.name }}" class="img-fluid" style="width: 150px; height: 80px;" />
+        <h4 class="mb-0">Продукти бренду {{ brand.name }}</h4>
+    </div>
+{% else %}
+    <div class="d-flex align-items-center justify-content-center">
+        <img src="{% static 'images/default-brand.png' %}" alt="{{ brand.name }}" class="img-fluid" style="width: 150px; height: 80px; margin-right: 10px;" />
+        <h4 class="mb-0">Продукти бренду {{ brand.name }}</h4>
+    </div>
+{% endif %}
+
+<br>
+
+{% if products %}
+    <div class="container" style="max-width: 80%; margin: 0 auto;">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4">
+            {% for product in products %}
+                <div class="col">
+                    <div class="card h-100">
+                        <!-- Зображення з object-fit: contain для без обрізки -->
+                        <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.title }}" 
+                             style="height: 150px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-size: 1rem;">{{ product.title }}</h5>
+                            <p class="card-text" style="font-size: 0.875rem;">{{ product.description|truncatewords:15 }}</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between align-items-center">
+                            <span class="text-muted">{{ product.retail_price }} грн.</span>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm">Купити</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <p>Продукти цього бренду не знайдені.</p>
+{% endif %}
+{% endblock %}
+
+

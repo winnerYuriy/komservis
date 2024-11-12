@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<html lang="uk">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Оплата через LiqPay</title>  
+</head>  
+<body>  
+    <h1>Оплата через LiqPay</h1>  
+    <form action="https://www.liqpay.ua/api/3/checkout" method="POST">  
+        <input type="hidden" name="public_key" value="ваш_публичный_ключ">  
+        <input type="hidden" name="private_key" value="ваш_приватный_ключ">  
+        <input type="hidden" name="amount" value="100">  
+        <input type="hidden" name="currency" value="UAH">  
+        <input type="hidden" name="description" value="Тестовая оплата">  
+        <input type="hidden" name="order_id" value="123456">  
+        <input type="submit" value="Оплатить">  
+    </form>  
+</body>  
+</html>
+
+{% endblock %}

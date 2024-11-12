@@ -1,0 +1,54 @@
+<nav class="navbar navbar-dark bg-primary navbar-expand-lg sticky-top navbar-light p-3 shadow-sm"> 
+    <div class="container-fluid">
+        <!-- Бренд -->
+        <a class="navbar-brand" href="{% url 'shop:products' %}">
+            <i class="fa-solid fa-shop me-2"></i><strong>KOMservis SHOP</strong>
+        </a>
+        
+        <!-- Тоглер для мобільного меню -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Вміст меню -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Пошук -->
+            <form action="{% url 'shop:search-products' %}" method="get" class="mx-auto d-lg-flex d-none">
+                <div class="input-group">
+                    <span class="border-success input-group-text bg-success text-white"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="q" placeholder="ex. Samsung" class="form-control border-success" style="color: #7a7a7a" />
+                    <button class="btn btn-success text-dark search-button">Пошук</button>
+                </div>
+            </form>
+            
+            <!-- Меню в шаблоні -->
+            <ul class="main-menu">
+                {% for category in main_menu_categories %}
+            <li>
+                <a href="{% url 'shop:category-detail' category.slug %}">{{ category.name }}</a>
+            </li>
+            
+                {% endfor %}
+            <li><a href="{% url 'shop:brands_list' %}">БРЕНДИ</a></li>    
+            </ul>
+                   
+            <!-- Кошик і акаунт -->
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'cart:cart-view' %}">
+                        <i class="fa fa-shopping-cart"></i> Cart 
+                        <span class="badge bg-primary">{{ cart|length }}</span>
+                    </a>
+                </li>
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'shop:price-list' %}">Перегляд прайсу</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'account:dashboard' %}">{{ user.username }} Акаунт</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'account:logout' %}">Вихід</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'account:register' %}">Зареєструватися</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'account:login' %}">Увійти</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

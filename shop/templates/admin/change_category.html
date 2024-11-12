@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+  <h2>Змінити категорію для вибраних товарів</h2>
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="apply" class="button">Застосувати</button>
+  </form>
+{% endblock %}
+
+
+<!-- 
+    
+    <h2>Змінити категорію вибраних товарів</h2>
+    
+    <form method="post" action="." novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" name="apply" value="Застосувати">
+        <a href="{% url 'admin:shop_product_changelist' %}">Скасувати</a>
+    </form>
+
+-->

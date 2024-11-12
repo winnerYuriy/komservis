@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Прайс наявних товарів</h2>
+    <a href="{% url 'shop:download-price-excel' %}" class="btn btn-primary">Завантажити в Excel</a>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Бренд</th>
+                <th>Категорія</th>
+                <th>Ціна</th>
+                <th>Кількість</th>
+                <th>Знижка</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.title }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.category__name }}</td>
+                    <td>{{ product.retail_price }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.discount }}%</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>    
+{% endblock %}

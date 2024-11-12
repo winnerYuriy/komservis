@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+    <h1>Продукти</h1>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
+        {% for product in products %}
+            <div class="col">
+                <div class="card">
+                    <img class="card-img-top" src="{{ product.main_image.url }}" alt="{{ product.title }}">
+
+                    <!-- Додаємо динамічні ярлики -->
+                    {% for label in product.get_promotion_labels %}
+                        <span class="action-block__label action-block__label_action no-title orange_plate">{{ label }}</span>
+                    {% endfor %}
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.title }}</h5>
+                        <p class="card-text">{{ product.description }}</p>
+                        <p class="price">{{ product.retail_price }} грн.</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

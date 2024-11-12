@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<style>
+    body {
+        background-color: gray;
+    }
+</style>
+
+<body>
+    <br>
+    <div class="container bg-white shadow-md p-5" style="width:500px; border-radius:20px;">
+        <form id="liqpay-form" method="POST" action="/payment/complete_order/">
+            <div>
+                <h3> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> &nbsp; Завершіть замовлення </h3>
+                <p> Будь ласка, введіть інформацію нижче. </p>
+
+                <hr>
+                <br>
+
+                <div class="form-field">
+                    <input class="form-control validate" id="name" type="text" placeholder="Повне ім'я*" autocomplete="off" value="{{shipping_address.full_name}}" required>
+                </div>
+
+                <br>
+
+                <div class="form-field">
+                    <input class="form-control validate" id="email" type="email" placeholder="Email адреса*" autocomplete="off" value="{{shipping_address.email}}" required>
+                </div>
+
+                <br>
+
+                <div class="form-field">
+                    <input class="form-control validate" id="address1" type="text" placeholder="Вулиця*" autocomplete="off" value="{{shipping_address.street_address}}" required>
+                </div>
+
+                <br>
+
+                <div class="form-field">
+                    <input class="form-control validate" id="address2" type="text" placeholder="Номер квартири" autocomplete="off" value="{{shipping_address.apartment_address}}">
+                </div>
+
+                <br>
+
+                <div class="form-field">
+                    <input class="form-control" id="state" type="text" placeholder="Країна" autocomplete="off" value="{{shipping_address.country}}">
+                </div>
+
+                <br>
+
+                <div class="form-field">
+                    <input class="form-control" id="zipcode" type="text" placeholder="Поштовий індекс (опціонально)" autocomplete="off" value="{{shipping_address.zip}}">
+                </div>
+            </div>
+
+            <br>
+            {% csrf_token %}
+
+            <input type="hidden" name="liqpay-payment" value="liqpay-payment">
+            <button type="button" id="liqpay-button">Оплатити через LiqPay</button>
+
+            <br>
+        </form>
+    </div>
+    <br>
+
+    <script>
+        document.getElementById('liqpay-button').addEventListener('click', function() {
+            document.getElementById('liqpay-form').submit();
+        });
+    </script>
+
+</body>
+
+{% endblock %}

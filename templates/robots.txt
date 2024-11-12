@@ -1,0 +1,18 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /account/
+Disallow: /cart/
+Disallow: /payment/
+Disallow: /recommend/
+Disallow: /email/
+Disallow: /api/
+Disallow: /static/
+Disallow: /media/
+
+# Дозволити індексацію сторінок категорій і продуктів
+Allow: /shop/
+Allow: /shop/category/
+Allow: /shop/product/
+
+# Шлях до карти сайту
+Sitemap: https://komservis.in.ua/sitemap.xml

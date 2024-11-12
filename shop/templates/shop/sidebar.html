@@ -1,0 +1,19 @@
+{% load mptt_tags %}
+
+<aside class="sidebar">
+ <!-- <h2>Категорії</h2>-->
+  <ul class="category-list">
+    {% recursetree categories %}
+      <li>
+        <a href="{% url 'shop:category-detail' node.slug %}">{{ node.name }}</a>
+        {% if not node.is_leaf_node %}
+          <ul>
+            {{ children }}
+          </ul>
+        {% endif %}
+      </li>
+    {% endrecursetree %}
+  </ul>
+</aside>
+
+

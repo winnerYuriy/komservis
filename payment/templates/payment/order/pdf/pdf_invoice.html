@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigCorp Shop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h3 {
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .total {
+            font-weight: bold;
+            background-color: #e9e9e9;
+        }
+        .paid {
+            color: green;
+        }
+        .pending {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <h1>Інтернет-магазин "КОМсервіс"</h1>
+    <p>
+        № Рахунку: {{ order.id }}<br>
+        <span class="secondary">
+        {{ order.created|date:"d M, Y" }}
+        </span>
+    </p>
+    <h3>Виписаний: {{ order.user }}</h3>
+    <p>
+        {% with shipping_address=order.shipping_address %}
+        {{ shipping_address.full_name }}<br>
+        {{ shipping_address.email }}<br>
+        {{ shipping_address.street_address }}<br>
+        {{ shipping_address.apartment_address }}<br>
+        {{ shipping_address.zip_code }}, {{ shipping_address.country }}, {{ shipping_address.city }}
+        {% endwith %}
+    </p>
+    <h3>Вибрані наступні товари</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Ціна</th>
+                <th>К-сть</th>
+                <th>Вартість</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr class="row{% cycle '1' '2' %}">
+                <td>{{ item.product.title }}</td>
+                <td>${{ item.price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.total_cost }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total">
+                <td colspan="3">Всього</td>
+                <td class="num">{{ order.get_total_cost }} грн.</td>
+            </tr>
+        </tbody>
+    </table>
+    <span class="{% if order.paid %}paid{% else %}pending{% endif %}">
+        {% if order.paid %}Оплачений{% else %}Очікує оплати{% endif %}
+    </span>
+</body>
+</html>

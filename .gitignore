@@ -1,0 +1,55 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# Django
+*.log
+db.sqlite3
+media/
+*.pot
+*.py[cod]
+*.sqlite3
+*.pdb
+*.egg-info/
+*.egg
+
+# Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# Static files
+staticfiles/
+
+# Local development settings
+local_settings.py
+.env
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db

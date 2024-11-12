@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Head imports -->
+    {% include 'shop/_partials/_head_imports.html' %}
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'shop/css/base.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="{% static 'shop/images/favicon.ico' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    {% block head %}{% endblock head %}
+  </head>
+
+  <body class="d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    {% include 'shop/_partials/_navbar.html' %}
+
+    <!-- Messages -->
+    {% include 'shop/_partials/_messages.html' %}
+
+    <main class="flex-grow-1">
+      {% if show_sidebar %}
+      <div class="container-fluid d-flex">
+        <aside class="sidebar">
+          <h2>Каталог</h2>
+          {% include 'shop/sidebar.html' %}
+        </aside>
+        <section class="content flex-grow-1">
+      {% else %}
+      <section class="content container py-4">
+      {% endif %}
+
+        <!-- Content -->
+        {% block content %}{% endblock %}
+
+      {% if show_sidebar %}
+        </section>
+      </div>
+      {% endif %}
+    </main>
+
+    <!-- Footer -->
+    {% include 'shop/_partials/_footer.html' %}
+  </body>
+
+  <script src="{% static 'shop/js/base.js' %}"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+</html>

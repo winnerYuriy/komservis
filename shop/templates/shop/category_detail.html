@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<main>
+  <div class="album py-5 bg-light">
+    <div class="container">
+      <div class="pb-3 h5"> {{ category.name|capfirst }} </div>
+      <hr><br>
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
+        {% for product in products %}
+          <div class="col">
+            <div class="card shadow-sm">
+
+              {% if product.main_image %}
+                <img class="img-fluid" alt="Product image" src="{{ product.main_image.url }}">
+              {% else %}
+                <img class="img-fluid" alt="No image available" src="{% static 'images/default.jpg' %}">
+              {% endif %}
+
+              <div class="card-body">
+                <p class="card-text">
+                  <a class="text-info text-decoration-none" href="{{ product.get_absolute_url }}"> 
+                    {{ product.title|capfirst }}
+                  </a>
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5>{{ product.retail_price }} грн.</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+

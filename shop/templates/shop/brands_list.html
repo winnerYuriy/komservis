@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load thumbnail %}
+
+{% block content %}
+{% with show_sidebar=False %}
+<h1>Бренди</h1>
+<div class="brands-container container d-flex flex-wrap justify-content-start" style="width: 75%; margin: 0 auto;">
+    {% for brand in brands %}
+        <div class="brand-card m-2 d-flex flex-column align-items-center" style="min-width: 150px; max-width: 200px; flex: 1;">
+            <a class="text-black text-decoration-none w-100" href="{% url 'shop:brand_products' brand.slug %}">
+                <div class="card shadow-sm text-center">
+                    {% if brand.image %}
+                    <div class="brand-card">
+                        <img src="{{ brand.image.url }}" alt="{{ brand.name }}" style="width: 150px; height: 80px;" />
+                    </div>
+                    {% else %}
+                        <img class="img-fluid p-2" alt="Зображення за замовчуванням" src="{% static 'images/default-brand.png' %}" style="width: 150px; height: 80px;" />
+                    {% endif %}
+                    <div class="brand-name mt-2">
+                        <p class="card-text">{{ brand.name }}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+{% endwith %}
+{% endblock %}

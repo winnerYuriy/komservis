@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+    <br>
+    <div class="container bg-white shadow-md p-3">
+        <h4>Ласкаво просимо, {{ user.username }}!</h4>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <h6>Ваш основний аватар:</h6>
+                <div id="main-avatar" style="width: 100px; height: 100px;">
+                    <img src="{{ user.profile.avatar.image.url }}" alt="Аватар" class="img-fluid rounded-circle" style="width: 100px; height: 100px;">
+                </div>
+            </div>
+            <div class="col-md-8">
+                <h6>Виберіть новий аватар:</h6>
+                <form method="POST" action="{% url 'account:update-avatar' %}">
+                    {% csrf_token %}
+                    <div class="form-group d-flex flex-wrap">
+                        {% for avatar in avatars %}
+                            <label class="m-2">
+                                <input type="radio" name="avatar" value="{{ avatar.id }}" data-avatar-id="{{ avatar.id }}" {% if user.profile.avatar.id == avatar.id %}checked{% endif %}>
+                                <img src="{{ avatar.image.url }}" alt="Аватарка" class="img-thumbnail avatar-option" style="width: 150px; height: 150px;" data-avatar-id="{{ avatar.id }}">
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Зберегти зміни</button>
+                </form>
+            </div>
+        </div>
+
+        <hr>
+
+        <a href="{% url 'account:logout' %}">
+            <button class="btn btn-primary">Вихід</button>
+        </a>
+
+        <a href="{% url 'account:profile-management' %}">
+            <button class="btn btn-success">Управління профілем</button>
+        </a>
+        
+        <a href="{% url 'account:delete-user' %}">
+            <button class="btn btn-warning">Видалити акаунт</button>
+        </a>
+    </div>
+
+    <script>
+        document.querySelectorAll('.avatar-option').forEach(avatar => {
+            avatar.addEventListener('click', function() {
+                // Змінюємо основну аватарку
+                const mainAvatar = document.querySelector('#main-avatar img');
+                mainAvatar.src = this.src;
+                
+                // Встановлюємо ID вибраної аватарки як активний елемент форми
+                document.querySelector(`input[type="radio"][value="${this.dataset.avatarId}"]`).checked = true;
+            });
+        });
+    </script>
+{% endblock %}

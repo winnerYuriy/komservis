@@ -1,0 +1,189 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Контейнер для контенту займає все доступне місце, за винятком футера */
+.content {
+  flex-grow: 1;
+}
+
+/* Стилі для футера */
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+
+body{
+ /* font-family: 'Montserrat', sans-serif; ---> */
+  font-family: 'Exo 2', sans-serif;
+}
+
+
+.main-menu {
+  color: white; /* Робить текст білим */
+}
+
+.main-menu a {
+  color: white; /* Робить текст посилань білим */
+  text-decoration: none; /* Прибирає підкреслення у посилань */
+}
+
+.main-menu a:hover {
+  color: lightgray; /* Опціонально: змінює колір при наведенні */
+}
+
+.form-layout {
+    border-radius: 20px;
+    width: 500px;
+}
+
+.badge {
+padding-left: 9px;
+padding-right: 9px;
+-webkit-border-radius: 9px;
+-moz-border-radius: 9px;
+border-radius: 9px;
+}
+
+.label-warning[href],
+.badge-warning[href] {
+background-color: #c67605;
+}
+
+#lblCartCount {
+font-size: 12px;
+background: #3c9700;
+color: #fff;
+padding: 0 5px;
+vertical-align: top;
+margin-left: -2px; 
+}
+
+a {
+font-size: 14px;
+font-weight: 700;
+color: #ffffff;
+}
+
+.superNav {
+font-size: 13px;
+}
+
+.form-control {
+outline: none !important;
+box-shadow: none !important;
+}
+.navbar-nav li:hover > ul.dropdown-menu {
+display: block;
+color: #000;
+}
+
+.dropdown-submenu {
+position: relative;
+}
+
+.dropdown-submenu > .dropdown-menu {
+top: 0;
+left: 100%;
+margin-top: -6px;
+}
+
+/* rotate caret on hover */
+.dropdown-menu > li > a:hover:after {
+text-decoration: underline;
+transform: rotate(-90deg);
+}
+
+@media screen and (max-width: 640px) {
+.centerOnMobile {
+  text-align: center;
+  } 
+}
+
+/* NavBar Search Button */
+.search-button {
+  background-color: #11a832;
+}
+
+.alert-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.alert-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.alert-success {
+  background-color: #207734;
+  color: #fff;
+}
+
+.alert-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.alert-warning {
+  background-color: #ffc107;
+  color: #fff;
+}
+
+.alert-info {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.alert-light {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.alert-dark {
+  background-color: #343a40;
+  color: #fff;
+}
+
+
+/* Стиль для контейнера картки */
+.product-card {
+  position: relative;
+  width: 250px; /* ширина картки */
+  height: 300px; /* висота картки */
+  padding: 0;
+ /* border: 1px solid #ddd;*/
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Розміщення кнопки ціни */
+.price-button {
+  position: absolute;
+  bottom: 16px; /* відступ від нижнього краю */
+  left: 50%;
+  transform: translateX(-50%); /* вирівнювання по центру */
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.container {
+  min-width: 1980px; /* або будь-яке інше значення */
+  width: 100%;
+}
+
+.sidebar-container {
+  margin-left: 10px;
+  padding: 10px; /* додає відступи всередині контейнера */
+  border: 1px solid #0c25b3; /* додає рамку для візуального виділення */
+}

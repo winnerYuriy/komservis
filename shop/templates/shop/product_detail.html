@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% block content %}
+
+<div class="container">
+    <main class="pt-5">
+
+        <div class="row">
+            <div class="col-12">
+                <strong><h3 class="mb-4 h3 text-left w-100">{{ product.title }}</h3></strong>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4 col-lg-5 order-md-first bg-light">
+                <img id="mainImage" class="img-fluid mx-auto d-block" alt="Responsive image" src="{{ product.full_image_url }}">
+                
+                <div class="card-footer">
+                    <div class="d-flex justify-content-center">
+                        {% for image in product.additional_images.all %}
+                        <img onclick="changeImage('{{ image.image.url }}')" src="{{ image.image.url }}" class="img-thumbnail m-1" style="width: 100px; cursor: pointer;" alt="Додаткове зображення">
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <script>
+                    function changeImage(imageUrl) {
+                        document.getElementById("mainImage").src = imageUrl;
+                    }
+                </script>
+            </div>
+
+            <div class="col-md-3 col-lg-7 ps-md-3 ps-lg-4">
+                <strong>Код товару:</strong> {{ product.code }}<br>
+                <strong>Артикул:</strong> {{ product.article }}<br>
+                <strong>Виробник:</strong> {{ product.brand }}<br>
+                <br>
+
+                <div class="border">
+                    <div class="col border-bottom">
+                        <div class="row p-3">
+                            <div class="col-6">Ціна</div>
+                            {% if product.discount %}
+                            <div class="col-6 text-end">
+                                <span class="h4 text-decoration-line-through fw-bold text-dark">{{ product.retail_price }} грн.</span>
+                                <span class="badge rounded-pill bg-info">Знижка</span>
+                                <span class="h3 fw-bold text-danger">{{ product.get_discounted_price }} грн.</span>
+                            </div>
+                            {% else %}
+                            <div class="col-6 text-end"><span class="h2 fw-bold text-dark">{{ product.retail_price }} грн.</span></div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="row p-3">
+                            <div class="col-6">
+                                <label for="select">Кількість</label>
+                                <select id="select">
+                                    {% for i in max_quantity %}
+                                        <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-6 text-end">
+                                <button type="button" id="add-button" value="{{ product.id }}" class="btn btn-secondary btn-sm">
+                                    У кошик
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+                <h6><strong>Характеристики:</strong></h6>
+
+                <!-- Таблиця характеристик -->
+                <table class="table table-bordered">
+                    <tbody>
+                        {% for name, value in attributes.items|slice:":5" %}
+                            <tr>
+                                <td>{{ name }}</td>
+                                <td>{{ value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Кнопка для показу повної таблиці -->
+                <a href="javascript:void(0);" id="show-more" onclick="toggleTable()">Показати всі характеристики</a>
+
+                <!-- Таблиця для додаткових характеристик -->
+                <table class="table table-bordered" id="additional-attributes" style="display: none;">
+                    <tbody>
+                        {% for name, value in attributes.items|slice:"5:" %}
+                            <tr class="additional-attributes" style="display: none;">
+                                <td>{{ name }}</td>
+                                <td>{{ value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                
+            </div>
+        </div>
+
+        <!-- Блок повного опису -->
+        <div class="row">
+            <div class="col-12">
+                <strong>Повний опис:</strong><br>
+                <p>{{ product.full_description }}</p>
+                <hr>
+            </div>
+        </div>
+    </main>
+
+    <br>
+
+    {% include 'recommend/recommendation.html' %}
+</div>
+<script src="{% static 'shop/js/base-shop.js' %}"></script>
+
+
+{% endblock %}
