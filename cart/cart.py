@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from shop.models import ProductProxy
+from shop.managers import ProductProxy
 
 
 class Cart():

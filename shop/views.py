@@ -1,13 +1,13 @@
+import json
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, TemplateView
-import json
 from .forms import ExcelUploadForm
-from .models import Category, Product, ProductProxy, Brand
+from .models import Category, Product, Brand
 from django.http import HttpResponse
 from .price_generator import get_available_products, generate_excel_file
 from datetime import datetime
-
+from .managers import ProductProxy
 
 
 class CategoryDetailView(ListView):

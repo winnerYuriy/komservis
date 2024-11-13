@@ -1,16 +1,16 @@
-from hashlib import md5
+import os
 import json
 import logging
-import os
-from django.http import HttpResponse
-from dotenv import load_dotenv
 import requests
+import pandas as pd
+from hashlib import md5
+from pyexpat.errors import messages
+from bs4 import BeautifulSoup
+from django.http import HttpResponse, JsonResponse
+from dotenv import load_dotenv
 from main.settings import BASE_DIR
-from shop.models import Product  # Замініть `myapp` на ім'я вашого додатка Django
 from django.core.files.base import ContentFile
-from .models import Brand
 from googleapiclient.discovery import build
-
 
 
 logger = logging.getLogger('shop.utils')
@@ -94,7 +94,7 @@ def fetch_product_details(product_id, sid, lang='ua'):
 # Налаштуйте ваш ключ API та CX (Search Engine ID) Google Custom Search API
 
 
-# Функція для пошуку логотипу бренду та завантаження його
+
 # Функція для завантаження логотипів брендів
 def download_brand_logos(modeladmin, request, queryset):
     # Перевіряємо, чи існує папка для збереження логотипів
@@ -144,3 +144,34 @@ def download_image(image_url, brand_name, save_folder):
         print(f"Логотип {brand_name} успішно завантажено.")
     else:
         print(f"Не вдалося завантажити зображення для бренду {brand_name}.")
+        
+
+def get_image_upload_path(instance, filename):
+    # Отримуємо назву батьківської категорії
+    parent_category_name = instance.product.category.name if instance.category.parent else 'Без категорії'
+    # Формуємо шлях збереження
+    return os.path.join('images/products/main', parent_category_name, filename)
+
+
+def clean_html(self, text):
+        """
+        Очищає HTML-теги з тексту.
+        """
+        soup = BeautifulSoup(text, 'html.parser')
+        return soup.get_text()
+    
+
+def get_discounted_price(self):
+        """
+        Calculates the discounted price based on the product's price and discount.
+        
+        Returns:
+            decimal.Decimal: The discounted price.
+        """
+        discounted_price = self.retail_price - (self.retail_price * self.discount / 100)
+        return round(discounted_price, 2)
+    
+    
+
+
+   

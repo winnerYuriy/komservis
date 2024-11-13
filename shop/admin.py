@@ -1,24 +1,21 @@
+import os
+import logging
+import json
 from django.contrib import admin, messages
-from django.http import JsonResponse
-from django.urls import path, reverse
+from django.urls import path
 from mptt.admin import MPTTModelAdmin
+import pandas as pd
+import requests
 from main.settings import BASE_DIR
-from .models import *
-from .utils import *
-from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.shortcuts import redirect, render
-import json
-from .forms import ExcelUploadForm, ChangeCategoryForm
-import pandas as pd
-import os
-import logging
 from dotenv import load_dotenv
 from django.db import transaction
-from transliterate import translit
 from django.core.exceptions import PermissionDenied
-from .utils import download_brand_logos  # Імпортуємо вашу функцію
+from .forms import ChangeCategoryForm, ProductAdminForm, ExcelUploadForm
+from .models import Brand, Category, Product, ProductImage, Promotion, Property, PropertyValue
+from .utils import HOST, download_product_images, get_token, download_brand_logos, save_product_image, download_excel_file
 
 
 @admin.action(description='Завантажити логотипи брендів')
@@ -32,7 +29,8 @@ def download_logos(modeladmin, request, queryset):
     
     # Повертаємо повідомлення про успішне виконання
     modeladmin.message_user(request, "Логотипи брендів успішно завантажено!")
-    return HttpResponse("Логотипи брендів завантажено!")
+    return modeladmin.message_user("Логотипи брендів завантажено!")
+
 
 @admin.action(description="Оновити описи товарів з API")
 @transaction.atomic
@@ -67,15 +65,6 @@ def make_unavailable(modeladmin, request, queryset):
     queryset.update(available=False)
 
 
-#@admin.action(description="Оновити товари з API")
-#def update_products_with_api_data_action(modeladmin, request, queryset):
-#    sid = get_token(f"{HOST}/auth")
-#    update_products_with_api_data(sid)
-#    modeladmin.message_user(
-#        request, "Товари успішно оновлено з API", level=messages.SUCCESS
-#    )
-
-
 @admin.action(description="Змінити категорію")
 def change_category(modeladmin, request, queryset):
     # Якщо форму було надіслано, обробляємо її
@@ -99,6 +88,13 @@ def change_category(modeladmin, request, queryset):
     )
 
 
+@admin.action(description='Видалити головне зображення')
+def delete_main_image(modeladmin, request, queryset):
+    for product in queryset:
+        if product.main_image:
+            product.main_image.delete(save=True)
+            product.save()
+
 load_dotenv()
 HOST = os.getenv("HOST")
 
@@ -108,11 +104,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
-class PropertyInline(admin.TabularInline):
-    model = Property
-    extra = 1  # Кількість порожніх форм для додавання властивостей       
-
-
+ 
 # Кастомний фільтр для фільтрації товарів без основного зображення
 class HasMainImageFilter(admin.SimpleListFilter):
     title = "Наявність основного зображення"
@@ -137,58 +129,16 @@ class ProductImageInline(admin.TabularInline):
     extra = 1
 
 
-class UploadProductsForm(forms.Form):
-    file = forms.FileField(label="Виберіть файл Excel")
-
-
-class ProductAdminForm(forms.ModelForm):
-    attributes_table = forms.CharField(widget=forms.HiddenInput(), required=False)
-
-    class Meta:
-        model = Product
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        attributes = self.get_attributes_as_dict(self.instance.additional_attributes)
-        table_html = self.generate_table_html(attributes)
-        self.fields["attributes_table"].widget = forms.Textarea(
-            attrs={"readonly": "readonly"}
-        )
-        self.fields["attributes_table"].initial = table_html
-
-    def get_attributes_as_dict(self, json_data):
-        try:
-            return json.loads(json_data) if json_data else {}
-        except json.JSONDecodeError:
-            return {}
-
-    def generate_table_html(self, attributes):
-        rows = "".join(
-            f'<tr><td>{key}</td><td><input type="text" name="attr_{key}" value="{value}" /></td></tr>'
-            for key, value in attributes.items()
-        )
-        return mark_safe(f"<table>{rows}</table>")
-
-    def clean(self):
-        cleaned_data = super().clean()
-        attributes = {}
-        for key, value in self.data.items():
-            if key.startswith("attr_"):
-                attr_key = key.replace("attr_", "")
-                attributes[attr_key] = value
-        cleaned_data["additional_attributes"] = json.dumps(attributes)
-        return cleaned_data
-
 
 @admin.register(Category)
 class CategoryMPTTAdmin(MPTTModelAdmin):
     list_display = ("name", "parent", "slug")
     ordering = ["name", "lft", "level"]
-    inlines = [PropertyInline,]
+    list_display = ('name',)
     #list_editable = ("",)
     list_filter = ("name", "parent")
     prepopulate_from = ('name', 'parent')
+    #prepopulated_fields = {'slug': ('name',)}  # автоматичне заповнення slug з назви
     class Media:
         js = ('admin/js/category_slug.js',)
         
@@ -219,11 +169,20 @@ class PromotionAdmin(admin.ModelAdmin):
             obj.slug = slugify(obj.name)
         super().save_model(request, obj, form, change)
         
+class PropertyValueInline(admin.TabularInline):  # or TabularPropertyInline
+    model = PropertyValue
+    extra = 1
+            
+
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    # Ваші налаштування для PropertyAdmin (наприклад, list_display, search_fields тощо)
-    list_display = ('name', 'value', 'category')
-
+    list_display = ('name', 'values_list')
+    inlines = [PropertyValueInline]
+    def values_list(self, obj):
+        # Припустимо, що у вас є поле `values`, яке містить значення властивості.
+        return ', '.join([str(value) for value in obj.values.all()])
+    values_list.short_description = 'Значення'
+    
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
@@ -248,7 +207,7 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ("title",)
     inlines = [ProductImageInline,]  
     readonly_fields = ("created_at", "updated_at")
-    actions = [make_available, make_unavailable, change_category, update_descriptions]
+    actions = [make_available, make_unavailable, change_category, update_descriptions, delete_main_image]
 
     fieldsets = (
         ("Основна інформація", {
@@ -277,35 +236,12 @@ class ProductAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
-    def get_pricelist(self, request):
-        target_id = 48
-        format = "xlsx"
-        sid = get_token(f"{HOST}/auth")
-        lang = "ua"
-        full = 3
-        url = f"{HOST}/pricelists/{target_id}/{format}/{sid}?lang={lang}&full={full}"
+    def log_to_file(self, message):
+        log_file_path = os.path.join(BASE_DIR, 'log.txt')
+        with open(log_file_path, 'a', encoding='utf-8') as file:
+            file.write(message + '\n')
 
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            data = response.json()
-            if data.get("status") == 1 and "url" in data:
-                url_to_download = data["url"]
-                return download_excel_file(url_to_download)
-            else:
-                return JsonResponse({"status": "error", "message": "Не вдалося отримати посилання на прайс."})
 
-        except requests.exceptions.RequestException as e:
-            return JsonResponse({"status": "error", "message": f"Помилка запиту до API: {e}"})
-        except json.JSONDecodeError:
-            return JsonResponse({"status": "error", "message": "Не вдалося декодувати відповідь сервера."})
-   
-        """   def update_products(self, request):
-        sid = get_token(f"{HOST}/auth")
-        update_products_with_api_data(sid)
-        self.message_user(request, "Дані для всіх товарів успішно оновлено.", level=messages.SUCCESS)
-        return redirect("..")       """
-   
     def import_products(self, request):
         if request.method == 'POST':
             form = ExcelUploadForm(request.POST, request.FILES)
@@ -338,7 +274,7 @@ class ProductAdmin(admin.ModelAdmin):
                 for index, row in df.iterrows():
                     product_data = {}
                     category_name = row.get('CategoryName').upper()                 
-                      
+                        
                     if category_name:
                         # Транслітеруємо назву категорії в латиницю
                         category_name_lat = translit(category_name, language_code='uk', reversed=True)
@@ -356,7 +292,7 @@ class ProductAdmin(admin.ModelAdmin):
                         )
                         product_data['category'] = category
 
-                         # Додаємо логіку для створення бренду
+                            # Додаємо логіку для створення бренду
                         brand_name = row.get('Vendor')
                         if brand_name:
                             brand, created = Brand.objects.get_or_create(
@@ -365,7 +301,7 @@ class ProductAdmin(admin.ModelAdmin):
                             product_data['brand'] = brand  # Заміщаємо назву бренду на об'єкт бренду
                         else:
                             self.log_to_file(f'Не вдалося знайти бренд для продукту на рядку {index}.')
-                                 
+                                    
                     for excel_column, model_field in column_mapping.items():
                         if excel_column in df.columns:  
                             if model_field != 'category' and model_field != 'brand':  # Не працюємо з категорією та брендом тут
@@ -396,12 +332,6 @@ class ProductAdmin(admin.ModelAdmin):
         else:
             form = ExcelUploadForm()
         return render(request, 'admin/import_products.html', {'form': form})
-
-
-    def log_to_file(self, message):
-        log_file_path = os.path.join(BASE_DIR, 'log.txt')
-        with open(log_file_path, 'a', encoding='utf-8') as file:
-            file.write(message + '\n')
 
 
     def changelist_view(self, request, extra_context=None):
@@ -459,6 +389,29 @@ class ProductAdmin(admin.ModelAdmin):
         return "Немає зображення"  # Або можна повертати пустий рядок
 
     image_show.short_description = "Зображення"
+
+    def get_pricelist(self, request):
+        target_id = 48
+        format = "xlsx"
+        sid = get_token(f"{HOST}/auth")
+        lang = "ua"
+        full = 3
+        url = f"{HOST}/pricelists/{target_id}/{format}/{sid}?lang={lang}&full={full}"
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = response.json()
+            if data.get("status") == 1 and "url" in data:
+                url_to_download = data["url"]
+                return download_excel_file(url_to_download)
+            else:
+                return JsonResponse({"status": "error", "message": "Не вдалося отримати посилання на прайс."})
+
+        except requests.exceptions.RequestException as e:
+            return JsonResponse({"status": "error", "message": f"Помилка запиту до API: {e}"})
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Не вдалося декодувати відповідь сервера."})
 
 
     def save_model(self, request, obj, form, change):

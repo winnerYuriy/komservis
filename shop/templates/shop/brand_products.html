@@ -24,8 +24,14 @@
                 <div class="col">
                     <div class="card h-100">
                         <!-- Зображення з object-fit: contain для без обрізки -->
-                        <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.title }}" 
-                             style="height: 150px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
+                        {% if product.main_image %}
+                            <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.title }}" 
+                            style="height: 150px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
+                        {% else %}
+                            <p>Зображення не доступне</p>
+                        {% endif %}
+
+                        
                         <div class="card-body">
                             <h5 class="card-title" style="font-size: 1rem;">{{ product.title }}</h5>
                             <p class="card-text" style="font-size: 0.875rem;">{{ product.description|truncatewords:15 }}</p>

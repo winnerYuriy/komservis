@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from .views import *
+from .views import ProductListView, CategoryDetailView, PriceListView, download_price_excel, import_products_view, products_detail_view, sidebar_view, brands_list, brand_products, search_products
 
 app_name = 'shop'
 

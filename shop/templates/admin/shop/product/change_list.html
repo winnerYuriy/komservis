@@ -2,27 +2,18 @@
 
 {% block object-tools %}
     {{ block.super }}
-    <div class="container-fluid d-flex flex-wrap justify-content-center my-3">
-        <a class="button btn btn-primary mx-2 my-1" href="{% url 'admin:import-products' %}">
+    <div class="container-fluid d-flex flex-wrap justify-content-center my-3" style="margin-bottom: 5px;">
+        <a class="button btn btn-primary" href="{% url 'admin:import-products' %}" style="margin: 0 10px 10px 0;">
             <i class="fas fa-upload"></i> Імпортувати товари
         </a>
 
-        <a class="button btn btn-primary mx-2 my-1" href="{% url 'admin:import-images' %}">
+        <a class="button btn btn-primary" href="{% url 'admin:import-images' %}" style="margin: 0 10px 10px 0;">
             <i class="fas fa-images"></i> Імпорт картинок
         </a>
 
-        <a class="button btn btn-primary mx-2 my-1" href="{% url 'admin:get-pricelist' %}">
+        <a class="button btn btn-primary" href="{% url 'admin:get-pricelist' %}" style="margin: 0 10px 10px 0;">
             <i class="fas fa-file-import"></i> Імпорт прайсу Brain
         </a>
-
-        {% if update_button %}
-        <form method="post" action="{% url 'admin:shop_product_changelist' %}" class="mx-2 my-1">
-            {% csrf_token %}
-            <button type="submit" name="action" value="update_products_with_api_data_action" class="button btn btn-primary">
-                <i class="fas fa-sync-alt"></i> Оновити товари з API
-            </button>
-        </form>
-        {% endif %}
     </div>
 {% endblock %}
 

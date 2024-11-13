@@ -1,16 +1,15 @@
-from bs4 import BeautifulSoup
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from mptt.models import MPTTModel, TreeForeignKey
+from .utils import get_image_upload_path
 
 
 class Category(MPTTModel):
     """
     Model representing a category.
     """
-
     name = models.CharField("Категорія", max_length=50, unique=True)
     parent = TreeForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True, 
@@ -27,26 +26,16 @@ class Category(MPTTModel):
         verbose_name_plural = "Категорії"
     
     def save(self, *args, **kwargs):
+        # Перетворюємо назву на заголовні літери
+        self.name = self.name.title()  # або self.name.capitalize() для першої літери всього слова
+        # Якщо slug порожній, створюємо його автоматично
         if not self.slug:
             self.slug = slugify(self.name)
-        super().save(*args, **kwargs)    
+        super(Category, self).save(*args, **kwargs)   
         
     def __str__(self):
         return self.name
-    
-    """ def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)  # Генерація slug на основі name
-            
-            # Перевірка на унікальність slug
-            original_slug = self.slug
-            counter = 1
-            while Category.objects.filter(slug=self.slug).exists():
-                self.slug = f'{original_slug}-{counter}'
-                counter += 1
 
-        super().save(*args, **kwargs)
-    """    
 
 class Promotion(models.Model):
     name = models.CharField(max_length=100, verbose_name="Назва акції")
@@ -133,7 +122,8 @@ class Product(models.Model):
     quantity = models.IntegerField("Кількість на складі", default=1)
     warranty = models.IntegerField("Гарантія, місяців", default=0)
     country = models.CharField("Країна виробництва", max_length=50, blank=True, null=True)
-    main_image = models.ImageField("Основне зображення", upload_to='images/products/%Y/%m/%d', null=True, blank=True)
+    #main_image = models.ImageField("Основне зображення", upload_to='images/products/{category.slug}', null=True, blank=True)
+    main_image = models.ImageField(upload_to=get_image_upload_path)
     images = models.ManyToManyField('ProductImage', blank=True, related_name='product_images')
     available = models.BooleanField("Наявність", default=True)
     created_at = models.DateTimeField('Дата створення', auto_now_add=True, db_index=True)
@@ -159,14 +149,6 @@ class Product(models.Model):
                 elif promotion.promotion_type == 'best_seller':
                     labels.append('Хіт продажів')       
         return labels
-   
-    
-    def clean_html(self, text):
-        """
-        Очищає HTML-теги з тексту.
-        """
-        soup = BeautifulSoup(text, 'html.parser')
-        return soup.get_text()
 
     def save(self, *args, **kwargs):
         # Очищаємо повний опис від HTML-тегів перед збереженням
@@ -188,15 +170,6 @@ class Product(models.Model):
     def is_available(self):
         return self.available and self.quantity > 0 
 
-    def get_discounted_price(self):
-        """
-        Calculates the discounted price based on the product's price and discount.
-        
-        Returns:
-            decimal.Decimal: The discounted price.
-        """
-        discounted_price = self.retail_price - (self.retail_price * self.discount / 100)
-        return round(discounted_price, 2)
 
     @property
     def full_image_url(self):
@@ -206,34 +179,35 @@ class Product(models.Model):
         """
         return self.main_image.url if self.main_image else ''
 
-
 class Property(models.Model):
-    PROPERTY_TYPES = [
-        ('text', 'Текст'),
-        ('choice', 'Вибір'),
-        ('number', 'Число'),
-    ]
-    category = models.ForeignKey(Category, related_name='properties', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)  # Назва властивості
-    value = models.CharField(max_length=255)  # Значення властивості
-    type = models.CharField(max_length=20, choices=PROPERTY_TYPES, default='text')
-
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+       
     class Meta:
-        verbose_name = 'Властивість'
+        verbose_name = 'Властивість'    
         verbose_name_plural = 'Властивості'
-        
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)        
-    
-    def __str__(self):
-        return f"{self.name} ({self.category})"
 
+    def __str__(self):
+        return self.name
+    
+    
+class PropertyValue(models.Model):
+    property = models.ForeignKey(Property, related_name='values', on_delete=models.CASCADE)
+    value = models.CharField(max_length=255)
+    
+    class Meta:
+        verbose_name = 'Значення властивості'
+        verbose_name_plural = 'Значення властивостей'
+
+    def __str__(self):
+        return self.value
+    
 class ProductImage(models.Model):
     """
     Модель для додаткових зображень товару.
     """
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='additional_images')
-    image = models.ImageField(upload_to='images/products/additional/%Y/%m/%d')
+    image = models.ImageField(upload_to='images/products/additional/{product.code}')
 
     class Meta:
         verbose_name = 'Додаткове зображення'
@@ -243,29 +217,3 @@ class ProductImage(models.Model):
         return f"{self.product.title} - додаткове зображення"
     
     
-class ProductManager(models.Manager):
-    def get_queryset(self):
-        """
-        Returns a queryset of products that are available.
-
-        Returns:
-            QuerySet: A queryset of products that are available.
-        """
-        return super(ProductManager, self).get_queryset().filter(available=True)
-
-
-class ProductProxy(Product):
-
-    objects = ProductManager()
-
-    def __str__(self):
-        return self.title   
-
-    def save(self, *args, **kwargs):
-        """
-        Save the current instance to the database.
-        """
-        super(ProductProxy, self).save(*args, **kwargs)
-    
-    class Meta:
-        proxy = True

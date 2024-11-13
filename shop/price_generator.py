@@ -1,6 +1,5 @@
 import io
 import pandas as pd
-from django.http import HttpResponse
 from .models import Product
 
 def get_available_products():

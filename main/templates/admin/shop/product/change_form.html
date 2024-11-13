@@ -1,0 +1,20 @@
+{% extends "admin/change_form.html" %}
+<h1>олрр лролорлдлхзє</h1>
+{% block submit_buttons %}
+    <!-- Додайте панель кнопок зверху -->
+    <div class="submit-row">
+        <input type="submit" value="Зберегти" class="default" name="_save">
+        <input type="submit" value="Зберегти і додати інше" name="_addanother">
+        <input type="submit" value="Зберегти і продовжити редагування" name="_continue">
+    </div>
+
+    <!-- Ваша стандартна панель кнопок -->
+    {{ block.super }}
+
+    <!-- Додайте панель кнопок знову після стандартної панелі -->
+    <div class="submit-row">
+        <input type="submit" value="Зберегти" class="default" name="_save">
+        <input type="submit" value="Зберегти і додати інше" name="_addanother">
+        <input type="submit" value="Зберегти і продовжити редагування" name="_continue">
+    </div>
+{% endblock %}
