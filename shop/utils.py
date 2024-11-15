@@ -8,7 +8,7 @@ from pyexpat.errors import messages
 from bs4 import BeautifulSoup
 from django.http import HttpResponse, JsonResponse
 from dotenv import load_dotenv
-from main.settings import BASE_DIR
+from main.settings import MEDIA_ROOT
 from django.core.files.base import ContentFile
 from googleapiclient.discovery import build
 
@@ -19,7 +19,7 @@ load_dotenv()
 HOST = os.getenv('HOST') 
 API_KEY = os.getenv('API_KEY') # 'your_api_key'
 CSE_ID = os.getenv('CSE_ID') # 'your_search_engine_id'
-MEDIA_ROOT = os.getenv('MEDIA_ROOT') # 'your_media_root'
+#MEDIA_ROOT = os.getenv('MEDIA_ROOT') # 'your_media_root'
 
          
                 
@@ -95,29 +95,38 @@ def fetch_product_details(product_id, sid, lang='ua'):
 
 
 
-# Функція для завантаження логотипів брендів
 def download_brand_logos(modeladmin, request, queryset):
     # Перевіряємо, чи існує папка для збереження логотипів
-   
-    logo_folder = os.path.join(BASE_DIR, '/brand_logos')
+    logo_folder = os.path.join(MEDIA_ROOT, 'brand_logos')  # без '/ на початку'
     if not os.path.exists(logo_folder):
         os.makedirs(logo_folder)
 
     # Обробка вибраних брендів з queryset
     for brand in queryset:
         try:
-            # Викликаємо функцію для пошуку логотипу
-            logo_url = search_brand_logo(brand.name)
-            if logo_url:
-                # Завантажуємо логотип
-                download_image(logo_url, brand.name, logo_folder)
+            # Шлях до файлу логотипу в директорії
+            logo_filename = os.path.join(logo_folder, f"{brand.name}.png")  # Заміни розширення на відповідне, якщо потрібно
+
+            # Перевіряємо, чи файл вже існує
+            if os.path.exists(logo_filename):
+                print(f"Логотип для бренду {brand.name} вже існує. Пропускаємо завантаження.")
             else:
-                print(f"Логотип для бренду {brand.name} не знайдено.")
+                # Викликаємо функцію для пошуку логотипу
+                logo_url = search_brand_logo(brand.name)
+                if logo_url:
+                    # Завантажуємо логотип
+                    download_image(logo_url, brand.name, logo_folder)
+                    print(f"Логотип для бренду {brand.name} успішно завантажено.")
+                else:
+                    print(f"Логотип для бренду {brand.name} не знайдено.")
         except Exception as e:
             print(f"Помилка при обробці бренду {brand.name}: {str(e)}")
 
     # Повідомлення про завершення процесу
-    modeladmin.message_user(request, "Логотипи для вибраних брендів успішно завантажено!")
+    modeladmin.message_user(request, "Логотипи для вибраних брендів успішно завантажено або пропущено, якщо вже існували.")
+
+# Функція для завантаження логотипів брендів
+
 
 download_brand_logos.short_description = "Завантажити логотипи для вибраних брендів"
 # Функція для пошуку логотипу бренду в Інтернеті через Google API
@@ -146,20 +155,24 @@ def download_image(image_url, brand_name, save_folder):
         print(f"Не вдалося завантажити зображення для бренду {brand_name}.")
         
 
-def get_image_upload_path(instance, filename):
+"""def get_image_upload_path(instance, filename):
     # Отримуємо назву батьківської категорії
     parent_category_name = instance.product.category.name if instance.category.parent else 'Без категорії'
     # Формуємо шлях збереження
     return os.path.join('images/products/main', parent_category_name, filename)
 
+"""
 
-def clean_html(self, text):
-        """
-        Очищає HTML-теги з тексту.
-        """
-        soup = BeautifulSoup(text, 'html.parser')
-        return soup.get_text()
+def get_image_upload_path(instance, filename):
+    # Перевіряємо, чи у instance є атрибут product і category, і чи існує parent у category
+    if hasattr(instance, 'product') and instance.product and instance.product.category:
+        parent_category_name = instance.product.category.name if instance.product.category.parent else 'Без категорії'
+    else:
+        parent_category_name = 'Без категорії'
     
+    # Формуємо шлях збереження
+    return os.path.join('images/products/main', parent_category_name, filename)
+  
 
 def get_discounted_price(self):
         """

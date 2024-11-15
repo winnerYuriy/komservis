@@ -1,9 +1,11 @@
+from bs4 import BeautifulSoup
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from mptt.models import MPTTModel, TreeForeignKey
 from .utils import get_image_upload_path
+
 
 
 class Category(MPTTModel):
@@ -27,11 +29,11 @@ class Category(MPTTModel):
     
     def save(self, *args, **kwargs):
         # Перетворюємо назву на заголовні літери
-        self.name = self.name.title()  # або self.name.capitalize() для першої літери всього слова
+        #self.name = self.name.title()  # або self.name.capitalize() для першої літери всього слова
         # Якщо slug порожній, створюємо його автоматично
         if not self.slug:
             self.slug = slugify(self.name)
-        super(Category, self).save(*args, **kwargs)   
+        super().save(*args, **kwargs)   
         
     def __str__(self):
         return self.name
@@ -86,8 +88,8 @@ class Promotion(models.Model):
 class Brand(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
-    image = models.ImageField(upload_to='brand_images/')
-
+    image = models.ImageField(null=True, blank=True)
+    
     class Meta:
         verbose_name = 'Бренд'
         verbose_name_plural = 'Бренди'
@@ -106,6 +108,7 @@ class Product(models.Model):
     A model representing a product.
 
     """
+    id = models.AutoField(primary_key=True, verbose_name="ID товару", null=False, blank=False, auto_created=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name="Категорія")
     title = models.CharField("Назва", max_length=250)
     product_id = models.IntegerField("ID товару", default=0)
@@ -150,12 +153,21 @@ class Product(models.Model):
                     labels.append('Хіт продажів')       
         return labels
 
+
+    def clean_html(self, text):
+        """
+        Очищає HTML-теги з тексту.
+        """
+        soup = BeautifulSoup(text, 'html.parser')
+        return soup.get_text()
+
     def save(self, *args, **kwargs):
         # Очищаємо повний опис від HTML-тегів перед збереженням
         if self.full_description:
-            self.full_description = self.clean_html(self.full_description)
+            self.full_description = self.clean_html(self.full_description)  # Виклик через self
         super(Product, self).save(*args, **kwargs)
-    
+
+
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'Товари'
@@ -182,10 +194,15 @@ class Product(models.Model):
 class Property(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    category = models.ManyToManyField(Category, related_name='properties', blank=True)
        
     class Meta:
         verbose_name = 'Властивість'    
         verbose_name_plural = 'Властивості'
+        
+    def category_list(self):
+        return ", ".join([category.name for category in self.category.all()])
+    category_list.short_description = 'Категорії'
 
     def __str__(self):
         return self.name

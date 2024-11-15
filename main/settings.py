@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django_htmx',
     'debug_toolbar',
     'mptt',
+    'import_export',
    
    
     # my apps
