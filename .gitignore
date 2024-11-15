@@ -34,6 +34,10 @@ staticfiles/
 local_settings.py
 .env
 
+#Logging
+*.log
+log.txt
+
 # Byte-compiled / optimized / DLL files
 *.py[cod]
 
