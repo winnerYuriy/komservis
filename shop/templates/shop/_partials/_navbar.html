@@ -22,16 +22,27 @@
             </form>
             
             <!-- Меню в шаблоні -->
-            <ul class="main-menu">
+            <ul class="main-menu navbar-nav">
                 {% for category in main_menu_categories %}
-            <li>
-                <a href="{% url 'shop:category-detail' category.slug %}">{{ category.name }}</a>
-            </li>
-            
+                <li class="nav-item category-item">
+                    <a href="{% url 'shop:category-detail' category.slug %}" class="nav-link">{{ category.name }}</a>
+                    {% if category.children.exists %}
+                    <!-- Підкатегорії для кожної категорії -->
+                    <ul class="subcategories-list list-unstyled">
+                        {% for subcategory in category.children.all %}
+                        <li>
+                            <a href="{% url 'shop:category-detail' subcategory.slug %}" class="text-white text-decoration-none">
+                                {{ subcategory.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </li>
                 {% endfor %}
-            <li><a href="{% url 'shop:brands_list' %}">БРЕНДИ</a></li>    
+                <li class="nav-item"><a class="nav-link" href="{% url 'shop:brands_list' %}">БРЕНДИ</a></li>    
             </ul>
-                   
+            
             <!-- Кошик і акаунт -->
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
@@ -52,3 +63,40 @@
         </div>
     </div>
 </nav>
+
+<!-- Стилі для розкривання підкатегорій на наведення -->
+<style>
+  .category-item {
+    position: relative;
+  }
+
+  .subcategories-list {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 10px;
+    padding-left: 10px;
+    background-color: #003366; /* Колір фону підкатегорій */
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    z-index: 1000;
+  }
+
+  .category-item:hover .subcategories-list {
+    display: block;
+  }
+
+  .subcategories-list li {
+    padding: 5px 10px;
+  }
+
+  .subcategories-list li a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .subcategories-list li a:hover {
+    text-decoration: underline;
+  }
+</style>

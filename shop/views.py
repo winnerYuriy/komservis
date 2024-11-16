@@ -10,7 +10,7 @@ from datetime import datetime
 from .managers import ProductProxy
 
 
-class CategoryDetailView(ListView):
+"""class CategoryDetailView(ListView):
     model = Product
     template_name = 'shop/category_detail.html'
     context_object_name = 'products'
@@ -18,12 +18,32 @@ class CategoryDetailView(ListView):
     def get_queryset(self):
         category = Category.objects.get(slug=self.kwargs['slug'])
         return Product.objects.filter(category=category)
+"""
 
+class CategoryDetailView(ListView):
+    model = Product
+    template_name = 'shop/category_detail.html'
+    context_object_name = 'products'
 
+    def get_queryset(self):
+        # Отримуємо категорію за slug
+        self.category = Category.objects.get(slug=self.kwargs['slug'])
+        # Отримуємо всі дочірні категорії, включаючи саму категорію
+        subcategories = self.category.get_descendants(include_self=True)
+        # Повертаємо товари, які належать до будь-якої з цих категорій
+        return Product.objects.filter(category__in=subcategories)
+
+    def get_context_data(self, **kwargs):
+        # Отримуємо контекст базового класу
+        context = super().get_context_data(**kwargs)
+        # Додаємо вибрану категорію до контексту
+        context['category'] = self.category
+        return context
+    
 class ProductListView(ListView):
     model = ProductProxy
     context_object_name = "products"
-    paginate_by = 15
+    paginate_by = 20
 
     def get_template_names(self):
         if self.request.htmx:

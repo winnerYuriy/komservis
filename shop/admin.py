@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.http import JsonResponse
 from django.urls import path, reverse
-from mptt.admin import MPTTModelAdmin
+from mptt.admin import MPTTModelAdmin, DraggableMPTTAdmin
 from main.settings import BASE_DIR
 from .models import *
 from .utils import *
@@ -169,15 +169,23 @@ class ProductAdminForm(forms.ModelForm):
 
 
 @admin.register(Category)
-class CategoryMPTTAdmin(MPTTModelAdmin):
-    list_display = ("name", "parent", "slug")
+class CategoryAdmin(DraggableMPTTAdmin):
+    mptt_indent_field = "name"
+    list_display = ('name', 'slug', 'parent')
+    list_display_links = ('name',)
+    ordering = ['tree_id', 'lft']  # Сортування для відображення ієрархічно
+    """list_display = ("name", "parent", "slug")
     ordering = ["name", "lft", "level"]
     #list_editable = ("",)
     list_filter = ("name", "parent")
     prepopulate_from = ('name', 'parent')
     class Media:
         js = ('admin/js/category_slug.js',)
-        
+    """ 
+    mptt_indent_field = "name"
+    list_display = ('tree_actions', 'indented_title')
+    list_display_links = ('indented_title',)
+    ordering = ['name']  # Сортування по алфавіту в адмінпанелі   
     def save_model(self, request, obj, form, change):
         if not obj.slug:
             obj.slug = slugify(obj.name)

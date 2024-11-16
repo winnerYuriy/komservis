@@ -1,4 +1,4 @@
-{%  include "base.html" %}
+{%  extends "base.html" %}
 
 {% load static %}
 
@@ -25,14 +25,14 @@
 
 <div class="container bg-white shadow-md p-5 form-layout">
     
-    <h3>Authentication</h3>
+    <h2>Увійти</h2>
     
     <br>
 
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <button type="submit" class="btn btn-secondary w-100 btn-block p-2 btn-register">Login</button>
+        <button type="submit" class="btn btn-secondary w-100 btn-block p-2 btn-register">Увійти</button>
     </form>
 
     <br>
@@ -59,12 +59,12 @@
 {% endif %}
 
     <div class="text-center">
-        <a href="{% url 'account:register' %}">Dont have an account?</a>
+        <a href="{% url 'account:register' %}">Немає облікового запису?</a>
     </div>
 
     <br>
     <div class="text-center">
-        <a href="{% url 'account:password_reset' %}">Forgot password?</a>
+        <a href="{% url 'account:password_reset' %}">Забули пароль?</a>
     </div>
 </div>
 

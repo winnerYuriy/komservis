@@ -17,7 +17,7 @@ class UserCreateForm(UserCreationForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(UserCreateForm,self).__init__(*args, **kwargs)
 
-        self.fields['email'].label = 'Your Email Address'
+        self.fields['email'].label = 'Email адреса'
         self.fields['email'].required = True
         self.fields['username'].help_text = ''
         self.fields['password1'].help_text = ''
@@ -43,7 +43,7 @@ class UserUpdateForm(forms.ModelForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(UserUpdateForm,self).__init__(*args, **kwargs)
 
-        self.fields['email'].label = 'Your Email Address'
+        self.fields['email'].label = 'Email адреса'
         self.fields['email'].required = True
     
     def clean_email(self):

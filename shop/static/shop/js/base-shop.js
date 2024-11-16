@@ -50,3 +50,14 @@ function toggleTable() {
         showMoreButton.textContent = 'Показати всі характеристики';
     }
  }
+
+
+ document.querySelectorAll('.menu-item > a').forEach(menuLink => {
+    menuLink.addEventListener('click', function (event) {
+        event.preventDefault(); // Запобігає переходу за посиланням
+        const submenu = this.nextElementSibling;
+        if (submenu && submenu.classList.contains('submenu')) {
+            submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+        }
+    });
+});

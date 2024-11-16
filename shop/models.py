@@ -8,10 +8,10 @@ from .utils import get_image_upload_path
 
 
 
-class Category(MPTTModel):
+"""class Category(MPTTModel):
     """
-    Model representing a category.
-    """
+    #Model representing a category.
+"""
     name = models.CharField("Категорія", max_length=50, unique=True)
     parent = TreeForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True, 
@@ -35,6 +35,36 @@ class Category(MPTTModel):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)   
         
+    def __str__(self):
+        return self.name
+"""
+
+class Category(MPTTModel):
+    """
+    Модель, що представляє категорію з використанням MPTT для ієрархічних структур.
+    """
+    name = models.CharField("Категорія", max_length=50, unique=True)
+    parent = TreeForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True, 
+        related_name='children', verbose_name='Батьківська категорія'
+    )
+    slug = models.SlugField('URL', max_length=50, unique=True, blank=True)
+    image = models.ImageField(upload_to='images/category_images/', null=True, blank=True)
+
+    class MPTTMeta:
+        order_insertion_by = ['name']  # Підкатегорії сортуються за іменем
+
+    class Meta:
+        verbose_name = "Категорія"
+        verbose_name_plural = "Категорії"
+        ordering = ['tree_id', 'lft']  # Сортування для відображення за ієрархією
+
+    def save(self, *args, **kwargs):
+        # Автоматичне створення `slug`, якщо він не заданий
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -182,7 +212,13 @@ class Product(models.Model):
     def is_available(self):
         return self.available and self.quantity > 0 
 
-
+    # функція, щоб відображати "Товар недоступний", навіть якщо товар існує, але його немає в наявності.
+    def availability_text(self):
+        if self.is_available():
+            return None  # Ціна відображається, якщо товар доступний
+        else:
+            return "Товар недоступний"
+    
     @property
     def full_image_url(self):
         """

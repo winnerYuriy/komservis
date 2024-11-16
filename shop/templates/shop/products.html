@@ -8,16 +8,10 @@
 {% if not request.user.is_authenticated %}
 <section class="py-4 text-center container">
   <div class="row py-lg-5">
-    <div class="col-lg-6 col-md-8 mx-auto">
-      <h4>Choose and it is in your hands.</h4>
-
+    <div class="col-lg-5 col-md-3 mx-auto">
+     <h5> Переглядайте та знаходьте найвигідніші пропозиції.</h5>
       <br />
-
-      <p class="lead text-muted">Browse and make the best deal</p>
-
-      <br />
-
-      <a href="#" class="btn btn-success my-2"> Create an account </a>
+      <a href="{% url 'account:register' %}" class="btn btn-success my-2"> Зареєструватися </a>
     </div>
   </div>
 </section>
@@ -25,11 +19,11 @@
 
 <!-- All products section -->
 <section class="album py-5 bg-light">
-  <div class="container" style="max-width: 75%; margin: 0 auto;">
-    <div class="pb-3 h5">Всі товари</div>
+  <div class="container" style="max-width: 100%; margin: 0 auto;">
+   <!-- <div class="pb-3 h5">Всі товари</div>
     <hr />
-
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4">
+    -->
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
       {% for product in products %}
         <div class="col">
           <div class="card h-100">

@@ -136,6 +136,36 @@ transform: rotate(-90deg);
   cursor: pointer;
 }
 
+.main-menu ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-item {
+  position: relative;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.submenu li a {
+  padding: 10px;
+  background-color: #f0f0f0;
+}
+
+.menu-item:hover .submenu {
+  display: block;
+}
+
+
 .main-menu {
   color: white; /* Робить текст білим */
 }
@@ -153,4 +183,9 @@ transform: rotate(-90deg);
   margin-left: 10px;
   padding: 10px; /* додає відступи всередині контейнера */
   border: 1px solid #0c25b3; /* додає рамку для візуального виділення */
+}
+
+.price.unavailable {
+  color: #720a0a;  /* Сірий колір */
+  font-weight: bold;
 }

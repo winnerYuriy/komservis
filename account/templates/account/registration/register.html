@@ -1,4 +1,4 @@
-{% include "base.html" %}
+{% extends "base.html" %}
 
 
 {% load static %}
@@ -25,12 +25,12 @@
     <br>
     <div class="container bg-white shadow-md p-5 form-layout">
 
-        <h3>Create new Account</h3>
+        <h3>Реєстрація</h3>
         <br>
         <form method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <input type="submit" value="Register" class="btn btn-secondary w-100 btn-block p-2 btn-register">
+            <input type="submit" value="Зареєструватися" class="btn btn-secondary w-100 btn-block p-2 btn-register">
         </form>
     </div>
 

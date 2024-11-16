@@ -25,16 +25,22 @@ body{
 
 
 .main-menu {
-  color: white; /* Робить текст білим */
+  list-style: none;
+  padding: 0;
 }
 
-.main-menu a {
-  color: white; /* Робить текст посилань білим */
-  text-decoration: none; /* Прибирає підкреслення у посилань */
+.menu-item {
+  position: relative;
 }
 
-.main-menu a:hover {
-  color: lightgray; /* Опціонально: змінює колір при наведенні */
+.submenu {
+  display: none;
+  list-style: none;
+  padding-left: 20px;
+}
+
+.menu-item:hover .submenu {
+  display: block;
 }
 
 .form-layout {

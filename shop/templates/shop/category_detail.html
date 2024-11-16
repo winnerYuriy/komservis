@@ -1,40 +1,100 @@
 {% extends "base.html" %}
 {% load static %}
 
+<!-- Підключення стилів -->
+<link rel="stylesheet" href="{% static 'shop/css/base.css' %}">
+
 {% block content %}
 <main>
   <div class="album py-5 bg-light">
     <div class="container">
-      <div class="pb-3 h5"> {{ category.name|capfirst }} </div>
-      <hr><br>
+      
+      <!-- Назва категорії -->
+      <div class="pb-3 h5">{{ category.name|capfirst }}</div>
+      <!-- Список підкатегорій -->
+      {% if category.children.exists %}
+        <div class="mb-4">
+          <h6>Підкатегорії:</h6>
+          <ul class="list-unstyled">
+            {% for subcategory in category.children.all %}
+              <li class="category-item">
+                <a href="{% url 'shop:category-detail' subcategory.slug %}" class="text-decoration-none text-primary">
+                  {{ subcategory.name|capfirst }}
+                </a>
+                {% if subcategory.children.exists %}
+                  <!-- Розкривається підкатегорії на наведення -->
+                  <ul class="subcategories-list">
+                    {% for subsubcategory in subcategory.children.all %}
+                      <li>
+                        <a href="{% url 'shop:category-detail' subsubcategory.slug %}" class="text-decoration-none text-secondary">
+                          {{ subsubcategory.name|capfirst }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
 
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
-        {% for product in products %}
-          <div class="col">
-            <div class="card shadow-sm">
+    <!-- Список товарів -->
+<section class="album py-5 bg-light">
+  <div class="container" style="max-width: 100%; margin: 0 auto;">
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+      {% for product in products %}
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <!-- Перевірка наявності акцій -->
+            {% if product.promotions.all %}
+              {% for promotion in product.promotions.all %}
+                <span class="action-block__label action-block__label_action no-title orange_plate">
+                  {{ promotion.name }}
+                </span>
+              {% endfor %}
+            {% endif %}
 
-              {% if product.main_image %}
-                <img class="img-fluid" alt="Product image" src="{{ product.main_image.url }}">
-              {% else %}
-                <img class="img-fluid" alt="No image available" src="{% static 'images/default.jpg' %}">
-              {% endif %}
+            <!-- Зображення товару -->
+            {% if product.main_image %}
+              <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.title }}" 
+                   style="height: 150px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
+            {% else %}
+              <img class="img-fluid" alt="Зображення відсутнє" src="{% static 'images/default.jpg' %}" 
+                   style="height: 150px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
+            {% endif %}
 
-              <div class="card-body">
-                <p class="card-text">
-                  <a class="text-info text-decoration-none" href="{{ product.get_absolute_url }}"> 
-                    {{ product.title|capfirst }}
-                  </a>
-                </p>
-                <div class="d-flex justify-content-between align-items-center">
+            <div class="card-body">
+              <p class="card-text">
+                <a class="text-info text-decoration-none" href="{{ product.get_absolute_url }}">
+                  {{ product.title|capfirst }}
+                </a>
+              </p>
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <!-- Перевірка кількості товару -->
+                {% if product.quantity > 0 %}
                   <h5>{{ product.retail_price }} грн.</h5>
-                </div>
+                  <a href="{{ product.get_absolute_url }}" class="btn btn-primary btn-sm">Купити</a>
+                {% else %}
+                  <h5 class="text-muted">Немає в наявності</h5>
+                  <span class="btn btn-secondary btn-sm disabled">Товар не доступний</span>
+                {% endif %}
               </div>
             </div>
           </div>
-        {% endfor %}
-      </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
     </div>
   </div>
 </main>
-{% endblock %}
 
+<!-- Підключення JavaScript -->
+<script src="{% static 'shop/js/base-shop.js' %}"></script>
+
+{% endblock %}
