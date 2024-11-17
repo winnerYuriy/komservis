@@ -148,3 +148,19 @@ transform: rotate(-90deg);
 .main-menu a:hover {
   color: lightgray; /* Опціонально: змінює колір при наведенні */
 }
+
+/* Контейнер для зображення */
+.image-container {
+  overflow: hidden; /* Це приховає частину зображення, що виходить за межі контейнера */
+  display: inline-block;
+}
+
+/* Зображення товару */
+.zoom-image {
+  transition: transform 0.3s ease-in-out; /* Плавне збільшення */
+}
+
+/* Ефект при наведенні */
+.zoom-image:hover {
+  transform: scale(1.2); /* Збільшення зображення на 20% */
+}

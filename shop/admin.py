@@ -491,3 +491,11 @@ def get_product_descriptions(product_id, sid, lang='ua'):
     except requests.RequestException as e:
         print(f"Помилка під час запиту: {e}")
     return None, None, None
+
+
+class VisitLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'page', 'date')  # Відображаємо ці поля в списку
+    list_filter = ('date', 'user')  # Додаємо фільтри за датою і користувачем
+    search_fields = ('user__username', 'page')  # Додаємо можливість пошуку по користувачу та сторінці
+
+admin.site.register(VisitLog, VisitLogAdmin)

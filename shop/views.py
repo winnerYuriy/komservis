@@ -1,14 +1,17 @@
 import json
+import plotly.express as px
+import pandas as pd
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, TemplateView
 from .forms import ExcelUploadForm
-from .models import Category, Product, Brand
+from .models import Category, Product, Brand, VisitLog
 from django.http import HttpResponse
 from .price_generator import get_available_products, generate_excel_file
 from datetime import datetime
 from .managers import ProductProxy
-
+from .filters import ProductFilter
+from django.db.models import Count
 
 """class CategoryDetailView(ListView):
     model = Product
@@ -19,6 +22,10 @@ from .managers import ProductProxy
         category = Category.objects.get(slug=self.kwargs['slug'])
         return Product.objects.filter(category=category)
 """
+
+def product_list(request):
+    product_filter = ProductFilter(request.GET, queryset=Product.objects.all())
+    return render(request, 'іshop/product_list.html', {'filter': product_filter})
 
 class CategoryDetailView(ListView):
     model = Product
@@ -118,8 +125,12 @@ def products_detail_view(request, slug):
                     return redirect(request.path)
         else:
             messages.error(request, "You need to be logged in to make a review.")
+            
+     # Отримуємо схожі товари (за тією ж категорією, але не сам товар)
+    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]        
     
     context = {
+        "similar_products": similar_products,
         "product": product,
         "attributes": formatted_attributes, 
         "max_quantity": range(1, max_quantity + 1)  # Передаємо відформатовані атрибути
@@ -219,3 +230,36 @@ def brand_products(request, brand_slug):
     
     # Повертаємо дані в шаблон
     return render(request, 'shop/brand_products.html', {'brand': brand, 'products': products})
+
+def visit_statistics_view(request):
+    # Отримуємо фільтровані дані по датах
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    visits = VisitLog.objects.all()
+    if start_date:
+        visits = visits.filter(date__gte=start_date)
+    if end_date:
+        visits = visits.filter(date__lte=end_date)
+    
+    # Групуємо по датах і підраховуємо кількість відвідувань
+    visit_data = visits.values('date__date').annotate(visits=Count('id')).order_by('date__date')
+
+    # Створення DataFrame на основі даних з запиту
+    if visit_data.exists():  # Перевіряємо, чи є дані
+        df = pd.DataFrame(list(visit_data))
+        df.rename(columns={'date__date': 'date', 'visits': 'visit_count'}, inplace=True)
+
+        # Створення графіка
+        fig = px.line(data_frame=df, x='date', y='visit_count', title='Visit Statistics')
+
+        # Перетворюємо графік в HTML
+        graph_html = fig.to_html()
+    else:
+        graph_html = "<p>No data available for the selected date range.</p>"
+
+    # Повертаємо дані в шаблон
+    return render(request, 'shop/visit_statistics.html', {
+        'graph': graph_html,
+        'visits': visits
+    })

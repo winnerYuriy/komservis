@@ -3,8 +3,8 @@
 {% block content %}
 
 <div class="container py-5">
-    <h1>Продукти</h1>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
+    <h1>товари</h1>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
         {% for product in products %}
             <div class="col">
                 <div class="card">
@@ -27,3 +27,15 @@
 </div>
 
 {% endblock %}
+
+
+<form method="get">
+    {{ filter.form.as_p }}
+    <button type="submit">Фільтрувати</button>
+</form>
+
+<ul>
+    {% for product in filter.qs %}
+        <li>{{ product.name }} - {{ product.price }} грн</li>
+    {% endfor %}
+</ul>

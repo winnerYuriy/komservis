@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from mptt.models import MPTTModel, TreeForeignKey
 from .utils import get_image_upload_path
+from django.contrib.auth.models import User
 
 
 
@@ -270,3 +271,10 @@ class ProductImage(models.Model):
         return f"{self.product.title} - додаткове зображення"
     
     
+class VisitLog(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    page = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.page} - {self.date}'

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+    <h1>Статистика відвідувань</h1>
+
+    <!-- Форма для фільтрації по даті -->
+    <form method="get">
+        <label for="start_date">Початкова дата:</label>
+        <input type="date" name="start_date" id="start_date">
+        <label for="end_date">Кінцева дата:</label>
+        <input type="date" name="end_date" id="end_date">
+        <button type="submit">Фільтрувати</button>
+    </form>
+
+    <!-- Виведення графіка -->
+    <div>
+        <h3>Графік відвідувань за період</h3>
+        <div>{{ graph|safe }}</div>
+    </div>
+
+    <!-- Таблиця з деталями відвідувань -->
+    <h3>Деталі відвідувань</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Користувач</th>
+                <th>Сторінка</th>
+                <th>Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visit in visits %}
+                <tr>
+                    <td>{{ visit.user.username }}</td>
+                    <td>{{ visit.page }}</td>
+                    <td>{{ visit.date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

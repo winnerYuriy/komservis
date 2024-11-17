@@ -16,13 +16,14 @@
         </div>
 
         <div class="row g-3">
-            <div class="col-md-4 col-lg-5 order-md-first bg-light">
+     
+              <div class="col-md-4 col-lg-5 order-md-first bg-light">
                 <img id="mainImage" class="img-fluid mx-auto d-block" alt="Responsive image" src="{{ product.full_image_url }}">
                 
                 <div class="card-footer">
                     <div class="d-flex justify-content-center">
                         {% for image in product.additional_images.all %}
-                        <img onclick="changeImage('{{ image.image.url }}')" src="{{ image.image.url }}" class="img-thumbnail m-1" style="width: 100px; cursor: pointer;" alt="Додаткове зображення">
+                            <img onclick="changeImage('{{ image.image.url }}')" src="{{ image.image.url }}" class="img-thumbnail m-1" style="width: 100px; cursor: pointer;" alt="Додаткове зображення">
                         {% endfor %}
                     </div>
                 </div>
@@ -123,6 +124,8 @@
     <br>
 
     {% include 'recommend/recommendation.html' %}
+
+    {% include 'shop/similar_products.html' %}
 </div>
 <script src="{% static 'shop/js/base-shop.js' %}"></script>
 

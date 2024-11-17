@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from .views import ProductListView, CategoryDetailView, PriceListView, download_price_excel, import_products_view, products_detail_view, sidebar_view, brands_list, brand_products, search_products
+from .views import *
 
 app_name = 'shop'
 
@@ -16,6 +16,8 @@ urlpatterns = [
     path('sidebar/', sidebar_view, name='sidebar-view'),
     path('brands/', brands_list, name='brands_list'),
     path('brands/<slug:brand_slug>/', brand_products, name='brand_products'),
+    path('products/', product_list, name='product_list'),
+    path('visit_statistics/', visit_statistics_view, name='visit-statistics'),
    # path('admin/shop/product/update_products_with_api/', update_products_with_api_data, name='update_products_with_api_data'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

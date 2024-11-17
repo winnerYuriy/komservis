@@ -1,12 +1,11 @@
 from decimal import Decimal
-
 from shop.managers import ProductProxy
-
+from django.conf import settings
 
 class Cart():
 
     def __init__(self, request) -> None:
-
+        # Ініціалізація корзини
         self.session = request.session
 
         cart = self.session.get('session_key')

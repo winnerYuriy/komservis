@@ -9,7 +9,6 @@ from .sitemaps import ProductSitemap
 from django.views.generic import TemplateView
 
 
-
 sitemaps = {
     'products': ProductSitemap,
 }
@@ -26,7 +25,10 @@ urlpatterns = [
     path('email/', include(email_urls), name='email-verification'),
     path('api/v1/', include('api.urls', namespace='api')),
     path('', views.index, name='index'),
+    path('accounts/', include('django.contrib.auth.urls')),  # Это включает в себя login, logout, управление паролями и т.д.
 ]
+
+handler404 = 'main.views.handle_404'
 
 if settings.DEBUG:
     import debug_toolbar

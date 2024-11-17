@@ -23,7 +23,7 @@
    <!-- <div class="pb-3 h5">Всі товари</div>
     <hr />
     -->
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
       {% for product in products %}
         <div class="col">
           <div class="card h-100">
@@ -38,9 +38,9 @@
 
 
             <!-- Image with object-fit: contain for no crop -->
-            {% thumbnail product.main_image "200x150" as im %}
+            {% thumbnail product.main_image "250x150" as im %}
             <img src="{{ im.url }}" class="card-img-top" alt="{{ product.title }}" 
-                 style="height: 150px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
+                 style="height: 250px; width: 100%; object-fit: contain; background-color: #f8f9fa; padding: 10px;">
             {% endthumbnail %}
             <div class="card-body">
               <h5 class="card-title" style="font-size: 1rem;">{{ product.title }}</h5>

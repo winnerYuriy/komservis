@@ -6,27 +6,27 @@
 {% if brand.image %}
     <div class="d-flex align-items-center justify-content-center">
         <img src="{{ brand.image.url }}" alt="{{ brand.name }}" class="img-fluid" style="width: 150px; height: 80px;" />
-        <h4 class="mb-0">Продукти бренду {{ brand.name }}</h4>
+        <h4 class="mb-0">  Продукти бренду {{ brand.name }}</h4>
     </div>
 {% else %}
     <div class="d-flex align-items-center justify-content-center">
         <img src="{% static 'images/default-brand.png' %}" alt="{{ brand.name }}" class="img-fluid" style="width: 150px; height: 80px; margin-right: 10px;" />
-        <h4 class="mb-0">Продукти бренду {{ brand.name }}</h4>
+        <h4 class="mb-0">  Продукти бренду {{ brand.name }}</h4>
     </div>
 {% endif %}
 
 <br>
 
 {% if products %}
-    <div class="container" style="max-width: 80%; margin: 0 auto;">
-        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4">
+    <div class="container" style="max-width: 100%; margin: 0 auto;">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
             {% for product in products %}
                 <div class="col">
                     <div class="card h-100">
                         <!-- Зображення з object-fit: contain для без обрізки -->
                         {% if product.main_image %}
                             <img src="{{ product.main_image.url }}" class="card-img-top" alt="{{ product.title }}" 
-                            style="height: 150px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
+                            style="height: 300px; width: 100%; object-fit: contain; background-color: #f8f9fa;">
                         {% else %}
                             <p>Зображення не доступне</p>
                         {% endif %}

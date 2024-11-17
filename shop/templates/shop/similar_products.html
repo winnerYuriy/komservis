@@ -1,0 +1,32 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Similar Products</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Схожі продукти</h1>
+    <div class="product-list">
+        {% if similar_products %}
+            <ul>
+                {% for product in similar_products %}
+                    <li>
+                        <div class="product-item">
+                            <h2>{{ product.name }}</h2>
+                            <p>Ціна: {{ product.price }} грн</p>
+                            <p>{{ product.description }}</p>
+                            <a href="{% url 'shop/product/' product.slug %}">Детальніше</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Схожі продукти не знайдені.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -28,10 +28,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CARD_SESSION_ID = 'cart'
 
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_soft.apps.AdminSoftDashboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'mptt',
     'import_export',
+    'django_filters',
    
    
     # my apps
