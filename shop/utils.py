@@ -6,11 +6,14 @@ import pandas as pd
 from hashlib import md5
 from pyexpat.errors import messages
 from bs4 import BeautifulSoup
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from dotenv import load_dotenv
 from main.settings import MEDIA_ROOT
+from django.core.files import File
 from django.core.files.base import ContentFile
 from googleapiclient.discovery import build
+from django.contrib import messages
 
 
 logger = logging.getLogger('shop.utils')
@@ -96,37 +99,51 @@ def fetch_product_details(product_id, sid, lang='ua'):
 
 
 def download_brand_logos(modeladmin, request, queryset):
-    # Перевіряємо, чи існує папка для збереження логотипів
-    logo_folder = os.path.join(MEDIA_ROOT, 'brand_logos')  # без '/ на початку'
+    logo_folder = os.path.join(settings.MEDIA_ROOT, 'brand_logos')
     if not os.path.exists(logo_folder):
         os.makedirs(logo_folder)
 
-    # Обробка вибраних брендів з queryset
     for brand in queryset:
         try:
-            # Шлях до файлу логотипу в директорії
-            logo_filename = os.path.join(logo_folder, f"{brand.name}.png")  # Заміни розширення на відповідне, якщо потрібно
+            logo_filename = f"{brand.name}.png"  # Ім’я файлу відносно brand_logos
+            local_file_path = os.path.join(logo_folder, logo_filename)
+            relative_file_path = os.path.join('brand_logos', logo_filename)  # Відносний шлях для поля image
 
-            # Перевіряємо, чи файл вже існує
-            if os.path.exists(logo_filename):
-                print(f"Логотип для бренду {brand.name} вже існує. Пропускаємо завантаження.")
-            else:
-                # Викликаємо функцію для пошуку логотипу
-                logo_url = search_brand_logo(brand.name)
-                if logo_url:
-                    # Завантажуємо логотип
-                    download_image(logo_url, brand.name, logo_folder)
-                    print(f"Логотип для бренду {brand.name} успішно завантажено.")
+            # Перевіряємо, чи поле image уже заповнене
+            if brand.image:
+                messages.info(request, f"Логотип для бренду {brand.name} уже пов’язаний із моделлю. Пропускаємо.")
+                continue
+
+            # Перевіряємо, чи файл існує в папці media/brand_logos
+            if os.path.exists(local_file_path):
+                # Пов’язуємо існуючий файл із полем image без створення нового
+                brand.image.name = relative_file_path  # Встановлюємо відносний шлях
+                brand.save()  # Зберігаємо модель без перезапису файлу
+                messages.info(request, f"Існуючий логотип для бренду {brand.name} пов’язаний із моделлю.")
+                continue
+
+            # Якщо файлу немає, шукаємо логотип в інтернеті
+            logo_url = search_brand_logo(brand.name)
+            if logo_url:
+                # Завантажуємо зображення
+                response = requests.get(logo_url, stream=True)
+                if response.status_code == 200:
+                    # Зберігаємо файл локально
+                    with open(local_file_path, 'wb') as f:
+                        for chunk in response.iter_content(1024):
+                            f.write(chunk)
+                    # Пов’язуємо файл із полем image
+                    with open(local_file_path, 'rb') as f:
+                        brand.image.save(logo_filename, File(f), save=True)
+                    messages.success(request, f"Логотип для бренду {brand.name} успішно завантажено.")
                 else:
-                    print(f"Логотип для бренду {brand.name} не знайдено.")
+                    messages.warning(request, f"Не вдалося завантажити логотип для {brand.name}: HTTP {response.status_code}")
+            else:
+                messages.warning(request, f"Логотип для бренду {brand.name} не знайдено.")
         except Exception as e:
-            print(f"Помилка при обробці бренду {brand.name}: {str(e)}")
+            messages.error(request, f"Помилка при обробці бренду {brand.name}: {str(e)}")
 
-    # Повідомлення про завершення процесу
-    modeladmin.message_user(request, "Логотипи для вибраних брендів успішно завантажено або пропущено, якщо вже існували.")
-
-# Функція для завантаження логотипів брендів
-
+    messages.success(request, "Процес завантаження логотипів завершено.")
 
 download_brand_logos.short_description = "Завантажити логотипи для вибраних брендів"
 # Функція для пошуку логотипу бренду в Інтернеті через Google API

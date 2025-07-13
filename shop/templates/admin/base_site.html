@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        /* Стилі для плавного зникнення */
+        .messagelist li {
+            transition: opacity 1s ease-out;
+        }
+        .messagelist li.fade-out {
+            opacity: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Знаходимо всі повідомлення
+            const messages = document.querySelectorAll('.messagelist li');
+            messages.forEach(function(message) {
+                // Затримка 10 секунд (10000 мс)
+                setTimeout(function() {
+                    message.classList.add('fade-out');
+                    // Видаляємо елемент після завершення анімації
+                    setTimeout(function() {
+                        message.remove();
+                    }, 1000); // Час анімації (1 секунда)
+                }, 10000); // Затримка перед початком зникнення (10 секунд)
+            });
+        });
+    </script>
+{% endblock %}
