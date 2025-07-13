@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to KOMservis{% endblock %}
+
+{% block content %}
+<div class="container text-center my-5">
+  <h1 id="welcome" class="display-4">Welcome to KOMservis</h1>
+  <div class="row justify-content-center mt-4">
+    <div class="col-md-3">
+      <a href="http://127.0.0.1:8000/shop/" class="text-decoration-none">
+        <div class="box box1 p-3 border rounded shadow-sm">
+          <h2 class="h5">Крамниця</h2>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <div class="box box2 p-3 border rounded shadow-sm">
+        <h2 class="h5">Новини</h2>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="box box3 p-3 border rounded shadow-sm">
+        <h2 class="h5">Інше</h2>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

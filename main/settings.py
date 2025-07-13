@@ -1,13 +1,7 @@
 from pathlib import Path
 from dotenv  import load_dotenv
 import os
-import logging
 
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
 
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
@@ -33,7 +27,6 @@ CARD_SESSION_ID = 'cart'
 # Application definition
 
 INSTALLED_APPS = [
-    'admin_soft.apps.AdminSoftDashboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,7 +42,6 @@ INSTALLED_APPS = [
     'django_email_verification',
     'sorl.thumbnail',
     'django_htmx',
-    'debug_toolbar',
     'mptt',
     'import_export',
     'django_filters',
@@ -62,6 +54,7 @@ INSTALLED_APPS = [
     'payment.apps.PaymentConfig',
     'recommend.apps.RecommendConfig',
     'api.apps.ApiConfig',
+    'content.apps.ContentConfig',
     
 ]   
 
@@ -73,8 +66,6 @@ MIDDLEWARE = [
     'django_htmx.middleware.HtmxMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'main.urls'
@@ -109,11 +100,11 @@ WSGI_APPLICATION = 'main.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": 'django.db.backends.postgresql',
-        "NAME": ('store'),
-        "USER": ('postgres'),
-        "PASSWORD": ('postgres'),
-        "HOST": ('localhost'),
-        "PORT": ('5432'),
+        "NAME": 'store',
+        "USER": 'postgres',
+        "PASSWORD": 'postgres',
+        "HOST": 'localhost',
+        "PORT": '5432',
     }
 }
 

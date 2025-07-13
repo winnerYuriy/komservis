@@ -24,6 +24,7 @@ urlpatterns = [
     path("recommend/", include('recommend.urls', namespace='recommend')),
     path('email/', include(email_urls), name='email-verification'),
     path('api/v1/', include('api.urls', namespace='api')),
+    path('content/', include('content.urls', namespace='content')),
     path('', views.index, name='index'),
     path('accounts/', include('django.contrib.auth.urls')),  # Это включает в себя login, logout, управление паролями и т.д.
 ]
