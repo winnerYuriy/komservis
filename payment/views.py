@@ -1,8 +1,6 @@
 import requests
 import uuid
 from decimal import Decimal
-
-import weasyprint
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -136,6 +134,6 @@ def admin_order_pdf(request, order_id):
     response['Content-Disposition'] = f'filename=order_{order.id}.pdf'
     css_path = static('payment/css/pdf.css').lstrip('/')
     # css_path = 'static/payment/css/pdf.css'
-    stylesheets = [weasyprint.CSS(css_path)]
-    weasyprint.HTML(string=html).write_pdf(response, stylesheets=stylesheets)
+  #  stylesheets = [weasyprint.CSS(css_path)]
+  #  weasyprint.HTML(string=html).write_pdf(response, stylesheets=stylesheets)
     return response

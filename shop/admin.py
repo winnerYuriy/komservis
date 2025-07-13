@@ -448,12 +448,12 @@ class ProductAdmin(admin.ModelAdmin):
                     f"Не вдалося отримати зображення для продукту {product.product_id}."
                 )
 
-        messages.success(
-            request, f"Зображення імпортовані для {imported_images_count} продуктів."
-        )
-        logging.info(
-            f"Імпорт зображень завершено, імпортовано: {imported_images_count} зображень."
-        )
+            messages.success(
+                request, f"Зображення імпортовані для {imported_images_count} продуктів."
+            )
+            logging.info(
+                f"Імпорт зображень завершено, імпортовано: {imported_images_count} зображень."
+            )
         return redirect("admin:shop_product_changelist")
 
     def image_show(self, obj):

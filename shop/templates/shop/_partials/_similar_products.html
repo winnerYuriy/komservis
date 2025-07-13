@@ -9,7 +9,7 @@
     <div class="products-list">
         {% for similar_product in similar_products %}
             <div class="product-item">
-                <a href="{% url 'product_detail' similar_product.slug %}">
+                <a href="{% url 'shop:product_detail' product.slug %}">
                     <img src="{{ similar_product.image.url }}" alt="{{ similar_product.name }}">
                     <p>{{ similar_product.name }}</p>
                 </a>

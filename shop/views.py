@@ -25,7 +25,7 @@ from django.db.models import Count
 
 def product_list(request):
     product_filter = ProductFilter(request.GET, queryset=Product.objects.all())
-    return render(request, 'іshop/product_list.html', {'filter': product_filter})
+    return render(request, 'shop/product_list.html', {'filter': product_filter})
 
 class CategoryDetailView(ListView):
     model = Product
@@ -168,14 +168,14 @@ def download_price_excel(request):
     # Формування назви файлу
     # current_date = datetime.now().strftime("%m.%Y")  # Формат дд.мм.рррр
     # file_name = f"Прайс на {current_date}.xlsx"
-    current_date = datetime.now().strftime("%d.%m.%y")  # Формат дд.мм.рр
-    file_name = f"Прайс на {current_date}.xlsx"
+    current_date = datetime.now().strftime('%d.%m.%y')  # Формат дд.мм.рр
+    file_name = f'Прайс на {current_date}.xlsx'
     # Повернення файлу з відповідним іменем
     response = HttpResponse(
         excel_file,
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    response["Content-Disposition"] = f'attachment; filename="{file_name}'
+    response["Content-Disposition"] = f'attachment; filename={file_name}'
     return response
 
 

@@ -1,0 +1,48 @@
+<!-- templates/articles/article_list.html -->
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статті</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><a href="/">Головна</a></li>
+                    <li><a href="/articles/">Статті</a></li>
+                    <li><a href="/contact/">Контакти</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Статті</h1>
+            {% if articles %}
+                <ul>
+                    {% for article in articles %}
+                        <li>
+                            <h2>{{ article.title }}</h2>
+                            <p>{{ article.content|truncatewords:30 }}</p>
+                            <p><small>Опубліковано: {{ article.created_at|date:"d.m.Y" }}</small></p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>На даний момент немає доступних статей.</p>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Всі права захищені.</p>
+        </div>
+    </footer>
+</body>
+</html>

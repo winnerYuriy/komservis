@@ -1,0 +1,151 @@
+/* Основні стилі */
+
+/* Глобальні стилі для розмітки */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+/* Основний вміст */
+main {
+    flex: 1; /* Займає весь доступний простір між хедером і футером */
+    padding: 20px;
+}
+
+body {
+    background: #f6f6f6;
+    color: #344150;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 13px;
+    min-width: 320px;
+    overflow-x: hidden !important;
+}
+
+/* Верхній банер */
+.award {
+    display: flex;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+    background-color: burlywood;
+    color: #fe0101;
+    font-size: large;
+}
+
+/* Хедер */
+.header-top {
+    position: relative;
+}
+
+.header-container {
+    display: flex;
+    max-width: 1280px;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ab0b0b;
+    margin: 0 auto;
+    background-color: rgb(251, 251, 251);
+    height: 50px;
+    padding: 0 15px;
+}
+
+.logo {
+    max-height: 60px;
+    width: 90px;
+    margin: 2px;
+}
+
+.navbar{
+    position: relative;
+}
+
+/* Ліве меню */
+.menu-left {
+    position:initial ;
+    align-items: center;
+}
+
+.main-menu-link {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #344150;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.main-menu-link:hover {
+    color: #ab0b0b;
+}
+
+/* Логін на правому краю */
+.main-menu-login {
+    margin-left: auto; /* Штовхає посилання до правого краю */
+    text-decoration: none;
+    color: #344150;
+    font-weight: bold;
+    padding: 10px 15px;
+    border: 1px solid #344150;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.main-menu-login:hover {
+    background-color: #2575e6;
+    color: white;
+}
+
+/* Футер */
+.footer {
+    background-color: #344150;
+    color: white;
+    padding: 20px 15px;
+    margin-top: 30px;
+}
+
+.footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.footer-section {
+    flex: 1;
+    margin: 10px;
+    min-width: 200px;
+}
+
+.logo-section .footer-logo {
+    max-width: 120px;
+    margin-bottom: 10px;
+}
+
+.nav-section a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+.nav-section a:hover {
+    color: #ffcc00;
+}
+
+.contact-section p {
+    margin: 5px 0;
+}
+
+/* Для мобільних пристроїв */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .footer-section {
+        text-align: center;
+    }
+}
