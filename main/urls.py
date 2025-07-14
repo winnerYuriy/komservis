@@ -27,7 +27,8 @@ urlpatterns = [
     path('content/', include('content.urls', namespace='content')),
     path('', views.index, name='index'),
     path('accounts/', include('django.contrib.auth.urls')),  # Это включает в себя login, logout, управление паролями и т.д.
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 handler404 = 'main.views.handle_404'
 

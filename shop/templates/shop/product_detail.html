@@ -11,7 +11,7 @@
 
         <div class="row">
             <div class="col-12">
-                <strong><h3 class="mb-4 h3 text-left w-100">{{ product.title }}</h3></strong>
+                <strong><h5 class="mb-4 h3 text-left w-100">{{ product.title }}</h5></strong>
             </div>
         </div>
 
@@ -123,11 +123,57 @@
 
     <br>
 
-    {% include 'recommend/recommendation.html' %}
+    {% include 'shop/similar_products.html' %}
 
+    {% include 'recommend/recommendation.html' %}
     
 </div>
 <script src="{% static 'shop/js/base-shop.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on('click', '.add-to-cart', function(e) {
+        e.preventDefault();
+        var product_id = $(this).data('index');
+        var quantity = $('#quantity-select-' + product_id).val();
+    
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart:add-to-cart" %}',
+            data: {
+                product_id: product_id,
+                product_qty: quantity,
+                csrfmiddlewaretoken: $('meta[name="csrf-token"]').attr('content'), // Оновлено
+                action: 'post'
+            },
+            success: function(response) {
+                alert(response.product + ' додано до кошика!');
+                $('#lblCartCount').text(response.qty);
+            },
+            error: function(error) {
+                console.log(error);
+                alert('Сталася помилка при додаванні товару: ' + error.statusText);
+            }
+        });
+    });
+    
+    function toggleTable() {
+        const table = document.getElementById('additional-attributes');
+        const rows = document.getElementsByClassName('additional-attributes');
+        if (table.style.display === 'none') {
+            table.style.display = 'table';
+            for (let row of rows) {
+                row.style.display = 'table-row';
+            }
+            document.getElementById('show-more').textContent = 'Приховати характеристики';
+        } else {
+            table.style.display = 'none';
+            for (let row of rows) {
+                row.style.display = 'none';
+            }
+            document.getElementById('show-more').textContent = 'Показати всі характеристики';
+        }
+    }
+</script>
 
 
 {% endblock %}

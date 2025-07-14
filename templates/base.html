@@ -5,6 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <!-- Head imports -->
     {% include 'shop/_partials/_head_imports.html' %}
     <title>{% block title %}Home{% endblock %}</title>
@@ -17,7 +18,15 @@
 
   <body class="d-flex flex-column min-vh-100">
     <!-- Navbar -->
-    {% include 'shop/_partials/_navbar.html' %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      {% include 'shop/_partials/_navbar.html' %}
+      <div class="ms-auto">
+        <a href="{% url 'cart:cart-view' %}" class="nav-link">
+          <i class="fas fa-shopping-cart"></i>
+          Кошик (<span id="lblCartCount">{{ cart_item_count|default:0 }}</span>)
+        </a>
+      </div>
+    </nav>
 
     <!-- Messages -->
     {% include 'shop/_partials/_messages.html' %}

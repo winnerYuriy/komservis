@@ -19,5 +19,4 @@ urlpatterns = [
     path('products/', product_list, name='product_list'),
     path('visit_statistics/', visit_statistics_view, name='visit-statistics'),
    # path('admin/shop/product/update_products_with_api/', update_products_with_api_data, name='update_products_with_api_data'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] 

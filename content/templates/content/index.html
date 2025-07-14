@@ -1,3 +1,6 @@
+{% extends 'base_cont.html' %}
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -7,47 +10,11 @@
     <meta name="keywords" content="діагностика ноутбука, ремонт ноутбуків, тестування ноутбуків">
     <meta name="author" content="Ваше ім'я">
     <title>Діагностика ноутбука: навіщо вона потрібна і як вона йде</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-        h2 {
-            font-size: 1.5rem;
-            margin-top: 30px;
-        }
-        p {
-            margin-bottom: 15px;
-        }
-        ul {
-            margin: 15px 0;
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 10px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    
 </head>
 <body>
+    {% block content %}
+    <main>
     <div class="container">
         <h1>Діагностика ноутбука: навіщо вона потрібна і як вона йде</h1>
         <p>У сучасному світі ноутбуки стали невід'ємною частиною нашого життя — від роботи та навчання до розваг. Однак, як і будь-яка інша техніка, ноутбуки з часом можуть давати збої або працювати менш ефективно. У таких випадках на допомогу приходить діагностика. Це ключовий етап обслуговування, який дозволяє виявити та усунути проблеми до того, як вони стануть серйозними.</p>
@@ -81,5 +48,7 @@
         <h2>Висновок</h2>
         <p>Діагностика ноутбука — це не просто усунення існуючих проблем, а й запобігання можливим збоям у майбутньому. Регулярна перевірка вашого пристрою допоможе зберегти його продуктивність, уникнути дорогого ремонту та продовжити термін служби.</p>
     </div>
+</main>
+{% endblock %}
 </body>
 </html>

@@ -127,7 +127,7 @@ def products_detail_view(request, slug):
             messages.error(request, "You need to be logged in to make a review.")
             
      # Отримуємо схожі товари (за тією ж категорією, але не сам товар)
-    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]        
+    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:3]        
     
     context = {
         "similar_products": similar_products,

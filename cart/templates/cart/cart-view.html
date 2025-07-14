@@ -1,8 +1,8 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
-
-{% load static %} 
-{% load mathfilters %} 
+{% load static %}
+{% load mathfilters %}
+{% load range_filter %}  <!-- Додаємо підключення фільтру -->
 
 {% block content %}
 
@@ -12,179 +12,149 @@
 
     <hr />
 
-    {% for item in cart %}
-    {% with product=item.product %}
-    
+    {% if cart %}
+        {% for item in cart %}
+        {% with product=item.product %}
+        <div class="row mb-4 border product-item">
+          <div class="col-md-3 col-lg-2 order-md-first bg-light">
+            <img
+              class="img-fluid mx-auto d-block"
+              width="200px"
+              alt="Responsive image"
+              src="{{ product.full_image_url }}"
+            />
+          </div>
 
-    <br />
+          <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
+            <a
+              href="{{ product.get_absolute_url }}"
+              class="text-info text-decoration-none"
+            >
+              <h1 class="h5 pt-2">{{ product.title }}</h1>
+            </a>
 
-    <div class="row mb-4 border product-item">
-      <div class="col-md-3 col-lg-2 order-md-first bg-light">
-        <img
-          class="img-fluid mx-auto d-block"
-          width="200px"
-          alt="Responsive image"
-          src="{{product.full_image_url}}"
-        />
-      </div>
+            <div class="border">
+              <div class="col border-bottom">
+                <div class="row p-3">
+                  <div class="col-6">Товар</div>
 
-      <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
-        <a
-          href="{{product.get_absolute_url}}"
-          class="text-info text-decoration-none"
-        >
-          <h1 class="h5 pt-2">{{product.title}}</h1>
-        </a>
+                  <div class="col-6 text-end">
+                    {% if product.discount %}
+                    <span class="text-decoration-line-through fw-bold text-danger">{{ product.retail_price|mul:item.qty }} грн.</span>
+                    <span class="h6 fw-bold">{{ product.get_discounted_price|mul:item.qty }} грн.</span>
+                    {% else %}
+                    <span class="h6 fw-bold">{{ product.retail_price|mul:item.qty }} грн.</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
 
-        <div class="border">
-          <div class="col border-bottom">
-            <div class="row p-3">
-              <div class="col-6">Товар</div>
+              <div class="col">
+                <div class="row p-3">
+                  <div class="col-12">
+                    <label for="select-{{ product.id }}">К-сть</label>
+                    <select id="select-{{ product.id }}">
+                      {% for i in product.quantity|add:1|range_filter %}  <!-- Змінюємо range на range_filter -->
+                        <option value="{{ i }}" {% if i == item.qty %}selected{% endif %}>{{ i }}</option>
+                      {% endfor %}
+                    </select>
 
-              <div class="col-6 text-end">
-                {%if product.discount%}
-                <span class="text-decoration-line-through fw-bold text-danger"> {{product.price|mul:item.qty}} грн.</span>
-                <span class="h6 fw-bold"> {{product.get_discounted_price|mul:item.qty}} грн.</span>
-                {% else%}
-                <span class="h6 fw-bold"> {{product.price|mul:item.qty}} грн.</span>
-                {% endif%}
+                    <br />
+                    <br />
+
+                    <button
+                      type="button"
+                      data-index="{{ product.id }}"
+                      class="btn btn-primary btn-sm update-button"
+                    >
+                      Оновити
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn btn-danger btn-sm delete-button"
+                      data-index="{{ product.id }}"
+                    >
+                      Видалити
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
 
-          <div class="col">
-            <div class="row p-3">
-              <div class="col-12">
-                <label for="select">К-сть</label>
-
-                &nbsp;
-
-                <select id="select{{product.id}}">
-                  <option selected>{{item.qty}}</option>
-
-                  <option value="">1</option>
-
-                  <option value="">2</option>
-
-                  <option value="">3</option>
-
-                  <option value="">4</option>
-                </select>
-
-                <br />
-                <br />
-
-                <button
-                  type="button"
-                  data-index="{{product.id}}"
-                  class="btn btn-primary btn-sm update-button"
-                >
-                  Update
-                </button>
-
-                &nbsp;
-
-                <button
-                  type="button"
-                  class="btn btn-danger btn-sm delete-button"
-                  data-index="{{product.id}}"
-                >
-                  Delete
-                </button>
-
-                
-              </div> 
-      
-              
+        <div class="col-12 text-end">
+          <div class="h6 fw-bold">
+            Всього:
+            <div id="total" class="d-inline-flex">
+              {{ cart.get_total_price }} грн.
             </div>
-            
           </div>
-          
+          <a href="{% url 'payment:checkout' %}" class="btn btn-success btn-md mt-4">Оформити замовлення</a>
         </div>
-        
-      </div>
-      
-    </div>
-
-    {% endwith %}
-    {% endfor %}
-    
-    <div class="col-12 text-end">
-      <div class="h6 fw-bold">
-        Всього: 
-        <div id="total" class="d-inline-flex">
-          {{ cart.get_total_price }} грн.
-        </div>
-      </div>
-      <button
-                  type="button"
-                  class="btn btn-success btn-md text-bg-light mt-4"
-            
-                >
-                <a class="nav-link text-decoration-none" href="{% url 'payment:checkout' %}">Оформити замовлення</a>
-                </button>
-    </div>
+    {% else %}
+        <p>Ваш кошик порожній.</p>
+        <a href="{% url 'shop:product_list' %}" class="btn btn-secondary">Повернутися до покупок</a>
+    {% endif %}
   </div>
 
   <br />
   <br />
 </main>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-
-    $(document).on('click', '.delete-button', function(e){
+    $(document).on('click', '.delete-button', function(e) {
         e.preventDefault();
+        var product_id = $(this).data('index');
 
         $.ajax({
             type: 'POST',
             url: '{% url "cart:delete-to-cart" %}',
             data: {
-                product_id: $(this).data('index'),
+                product_id: product_id,
                 csrfmiddlewaretoken: '{{ csrf_token }}',
                 action: 'post'
             },
-            success: function(response){
-                document.getElementById('lblCartCount').textContent = response.qty
-                document.getElementById('total').textContent = response.total
-
-                location.reload()
+            success: function(response) {
+                $('#lblCartCount').text(response.qty);
+                $('#total').text(response.total + ' грн.');
+                location.reload();
             },
-            error: function(error, status){
-                console.log(error)
+            error: function(error) {
+                console.log(error);
+                alert('Помилка при видаленні товару.');
             }
-        })
+        });
     });
 
-    $(document).on('click', '.update-button', function(e){
+    $(document).on('click', '.update-button', function(e) {
         e.preventDefault();
-
-        var product_id = $(this).data('index')
+        var product_id = $(this).data('index');
 
         $.ajax({
             type: 'POST',
             url: '{% url "cart:update-to-cart" %}',
             data: {
-                product_id: $(this).data('index'),
-                product_qty: $('#select'+product_id+ ' option:selected').text(),
+                product_id: product_id,
+                product_qty: $('#select-' + product_id).val(),
                 csrfmiddlewaretoken: '{{ csrf_token }}',
                 action: 'post'
             },
-            success: function(response){
-                document.getElementById('lblCartCount').textContent = response.qty
-                document.getElementById('total').textContent = response.total
-
-                location.reload()
+            success: function(response) {
+                $('#lblCartCount').text(response.qty);
+                $('#total').text(response.total + ' грн.');
+                location.reload();
             },
-            error: function(error, status){
-                console.log(error)
+            error: function(error) {
+                console.log(error);
+                alert('Помилка при оновленні кількості.');
             }
-        })
+        });
     });
-
-
-
-
-    
 </script>
 
 {% endblock %}

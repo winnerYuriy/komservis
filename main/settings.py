@@ -87,6 +87,9 @@ TEMPLATES = [
                 'shop.context_processors.categories_processor',
                 'cart.context_processors.cart',
             ],
+            'libraries': {
+                'range_filter': 'shop.templatetags.range_filter',
+            },
         },
     },
 ]

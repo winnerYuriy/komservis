@@ -5,21 +5,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Similar Products</title>
+    <title>Схожі продукти</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .product-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .product-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        .product-details {
+            flex-grow: 1;
+        }
+        .price {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>Схожі продукти</h1>
+    <h3>Схожі продукти</h3>
     <div class="product-list">
         {% if similar_products %}
             <ul>
                 {% for product in similar_products %}
                     <li>
                         <div class="product-item">
-                            <h2>{{ product.name }}</h2>
-                            <p>Ціна: {{ product.price }} грн</p>
-                            <p>{{ product.description }}</p>
-                            <a href="{% url 'products/' slug=product.slug %}">Детальніше</a>
+                            {% if product.main_image %}
+                                <img src="{{ product.full_image_url }}" alt="{{ product.title }}" class="product-image">
+                            {% else %}
+                                <img src="{% static 'images/default_product.jpg' %}" alt="Без зображення" class="product-image">
+                            {% endif %}
+                            <div class="product-details">
+                                <b>{{ product.title }}</b>
+                                <p>Ціна: <span class="price">{{ product.retail_price }} грн</span></p>
+                                <p>{{ product.description }}</p>
+                                <a href="{% url 'shop:product-detail' product.slug %}">Детальніше</a>
+                            </div>
                         </div>
                     </li>
                 {% endfor %}
@@ -28,5 +55,32 @@
             <p>Схожі продукти не знайдені.</p>
         {% endif %}
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).on('click', '.add-to-cart', function(e) {
+            e.preventDefault();
+            var product_id = $(this).data('index');
+            var quantity = $('#quantity-select-' + product_id).val();
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart:add-to-cart" %}',
+                data: {
+                    product_id: product_id,
+                    product_qty: quantity,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(response) {
+                    alert(response.product + ' додано до кошика!');
+                    $('#lblCartCount').text(response.qty);
+                },
+                error: function(error) {
+                    console.log(error);
+                    alert('Сталася помилка при додаванні товару.');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
